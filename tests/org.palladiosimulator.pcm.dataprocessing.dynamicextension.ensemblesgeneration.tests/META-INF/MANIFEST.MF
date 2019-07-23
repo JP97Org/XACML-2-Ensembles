@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tests
+Bundle-SymbolicName: org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.tests
+Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.tests
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Require-Bundle: org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration;bundle-version="0.0.0",
+ org.palladiosimulator.pcm.dataprocessing.dynamicextension
