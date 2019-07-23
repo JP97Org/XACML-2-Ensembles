@@ -1,8 +1,9 @@
 package org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.handlers;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.charset.Charset;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -43,13 +44,13 @@ public class SampleHandler extends AbstractHandler {
 		
 		// generating code
 		final PolicySetHandler handler = new PolicySetHandler(policySet);
-		final String code = handler.generateCode();
+		final String code = handler.getCode().toString();
 		
 		// writing code
 		final String path = PATH_SCALA_OUTPUT;
 		String error = null;
 		try {
-			final FileWriter writer = new FileWriter(new File(path));
+			final var writer = new PrintWriter(new File(path), Charset.forName("UTF-8"));
 			writer.write(code);
 			writer.close();
 		} catch (IOException e) {

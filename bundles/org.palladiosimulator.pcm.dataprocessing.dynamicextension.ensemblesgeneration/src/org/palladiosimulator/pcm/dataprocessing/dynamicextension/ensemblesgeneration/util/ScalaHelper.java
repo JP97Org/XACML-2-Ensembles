@@ -10,6 +10,7 @@ import org.eclipse.emf.codegen.util.CodeGenUtil;
  */
 public class ScalaHelper {
 	public final static String KEYWORD_CLASS = "class";
+	public final static String KEYWORD_OBJECT = "object";
 	public final static String KEYWORD_VAL = "val";
 	public final static String KEYWORD_EXTENDS = "extends";
 	public final static String KEYWORD_STRING = "String";
@@ -18,6 +19,7 @@ public class ScalaHelper {
 	public final static String KEYWORD_INTEGER = "Integer";
 	public final static String KEYWORD_COMPONENT = "Component";
 	public final static String KEYWORD_ENSEMBLE = "Ensemble";
+	public final static String KEYWORD_MODEL = "Model";
 	public final static String KEYWORD_CASE = "case";
 	public final static String KEYWORD_MEMBERSHIP = "membership";
 	public final static String KEYWORD_ALLOW = "allow";

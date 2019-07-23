@@ -1,0 +1,18 @@
+package org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala;
+
+import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.util.ScalaHelper;
+
+public class ValueInitialisation {
+	private final String name;
+	private final String expression;
+	
+	public ValueInitialisation(final String name, final String expression) {
+		this.name = name;
+		this.expression = expression;
+	}
+	
+	public StringBuilder getDefinition() {
+		return new StringBuilder(ScalaHelper.KEYWORD_VAL).append(" ").append(this.name)
+				.append(" = ").append(this.expression).append("\n");
+	}
+}
