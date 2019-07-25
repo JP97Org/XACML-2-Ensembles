@@ -1,10 +1,7 @@
 package org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation;
 
-import java.util.Arrays;
-
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ScalaClass;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ScalaCode;
-import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ValueDeclaration;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ValueInitialisation;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.xacml.AttributeExtractor;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.util.ScalaHelper;
@@ -29,15 +26,16 @@ public class PolicyCodePart implements CodePart {
 		
 		final ScalaCode ensembleCode = new ScalaCode();
 		
-		final var scalaClass = new ScalaClass(true, this.actionName, ScalaHelper.KEYWORD_ENSEMBLE);
-		//TODO adding all component information
-		scalaClass.addAllAttributes(Arrays.asList(new ValueDeclaration("subjects", "List[Subject]"))); 
-		ensembleCode.appendPreBlockCode(scalaClass.getClassDefinition());
+		final var actionEnsembleClass = new ScalaClass(true, this.actionName, ScalaHelper.KEYWORD_ENSEMBLE);
+		ensembleCode.appendPreBlockCode(actionEnsembleClass.getClassDefinition());
 		
 		//TODO adding all component vals
 		final var attributeExtractor = new AttributeExtractor("context:shift:name", "shiftName");
-		final String expression = "subjects" + "." 
-				+ "filter(" + AttributeExtractor.VAR_NAME +  " => " + attributeExtractor.extract(this.policy) + ")";
+		final String mapping = ".map[Component](x => x.getClass().cast(x))";
+		final String expression = "components" + ".select[Subject]."
+				+ "filter(" + AttributeExtractor.VAR_NAME +  " => " + attributeExtractor.extract(this.policy) + ")"
+				+ mapping;
+		
 		ensembleCode.appendBlockCode(new ValueInitialisation("allowedSubjects", expression).getDefinition());
 		
 		//TODO adding situation

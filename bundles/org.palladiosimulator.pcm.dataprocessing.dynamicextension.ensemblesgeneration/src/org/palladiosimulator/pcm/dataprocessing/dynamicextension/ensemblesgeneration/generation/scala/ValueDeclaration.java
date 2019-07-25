@@ -11,6 +11,11 @@ public class ValueDeclaration {
 		this.type = type;
 	}
 	
+	public ValueDeclaration(final boolean var, final String name, final String type) {
+		this.name = name;
+		this.type = type;
+	}
+	
 	public StringBuilder getDefinition() {
 		return new StringBuilder(ScalaHelper.KEYWORD_VAL).append(" ").append(this.name).append(": ").append(this.type);
 	}
