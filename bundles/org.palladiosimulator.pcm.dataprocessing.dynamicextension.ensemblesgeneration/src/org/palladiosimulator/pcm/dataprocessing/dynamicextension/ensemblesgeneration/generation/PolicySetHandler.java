@@ -106,7 +106,7 @@ public class PolicySetHandler implements CodePart {
 	}
 	
 	private StringBuilder rules(final List<String> rulesNames) {
-		final StringBuilder ret = new StringBuilder("rules(");
+		final StringBuilder ret = new StringBuilder("val allRules = rules(");
 		for (final String rulesName : rulesNames) {
 			ret.append(rulesName).append(", ");
 		}
@@ -120,13 +120,19 @@ public class PolicySetHandler implements CodePart {
 		final ScalaCode main = new ScalaCode();
 		main.appendPreBlockCode(new StringBuilder("def main(args: Array[String]): Unit ="));
 		
-		//TODO noch automatisiert generieren
+		//TODO (evtl. noch automatisiert generieren)
 		main.appendBlockCode(new StringBuilder("val scenario = new RunningExample\n" + 
-				"scenario.rootEnsemble.init()\n" + 
 				"val subjectA = new scenario.Subject(\"A\", \"Shift 1\")\n" + 
 				"val subjectB = new scenario.Subject(\"B\", \"Shift 2\")\n" + 
 				"scenario.components = List(subjectA, subjectB)\n" + 
-				"scenario.rootEnsemble.solve()"));
+				"scenario.rootEnsemble.init()\n" + 
+				"scenario.rootEnsemble.solve()\n" +
+				"val testActionAllow = scenario.rootEnsemble.instance.allRules.selectedMembers.exists(x => !x.allowedSubjects.isEmpty)\n" + 
+				"if(testActionAllow) {\n" + 
+				"println(\"allow\")\n" + 
+				"} else {\n" + 
+				"println(\"deny\")\n" + 
+				"}"));
 		
 		ret.appendBlockCode(main.getCode());
 		return ret;
