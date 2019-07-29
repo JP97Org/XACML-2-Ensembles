@@ -42,5 +42,9 @@ public class ScalaHelper {
 		return CodeGenUtil.validJavaIdentifier(s);
 		
 	}
+	
+	public static StringBuilder parenthesize(final StringBuilder toParenthesize) {
+		return toParenthesize.insert(0, '(').append(')');
+	}
 
 }
