@@ -31,19 +31,19 @@ public class PolicyCodePart implements CodePart {
 		final ScalaBlock ensembleCode = new ScalaBlock();
 		
 		final var actionEnsembleClass = new ScalaClass(true, this.actionName, ScalaHelper.KEYWORD_ENSEMBLE);
-		ensembleCode.appendPreBlockCode(actionEnsembleClass.getCodeDefinition());
+		ensembleCode.appendPreBlockCode(actionEnsembleClass);
 		
 		// subjects
 		final var subjectExtractor = new AttributeExtractor(this.policy, Category.SUBJECT);
 		final String subjectExpression = getExpression(ComponentCode.SUBJECT_CLASS_NAME, subjectExtractor);
 		final String subjectFieldName = "allowedSubjects";
-		ensembleCode.appendBlockCode(new ValueInitialisation(subjectFieldName, subjectExpression).getCodeDefinition());
+		ensembleCode.appendBlockCode(new ValueInitialisation(subjectFieldName, subjectExpression));
 		
 		// resources
 		final var resourceExtractor = new AttributeExtractor(this.policy, Category.RESOURCE);
 		final String resourceExpression = getExpression(ComponentCode.RESOURCE_CLASS_NAME, resourceExtractor);
 		final String resourceFieldName = "allowedResources";
-		ensembleCode.appendBlockCode(new ValueInitialisation(resourceFieldName, resourceExpression).getCodeDefinition());
+		ensembleCode.appendBlockCode(new ValueInitialisation(resourceFieldName, resourceExpression));
 		
 		// TODO: environment
 		

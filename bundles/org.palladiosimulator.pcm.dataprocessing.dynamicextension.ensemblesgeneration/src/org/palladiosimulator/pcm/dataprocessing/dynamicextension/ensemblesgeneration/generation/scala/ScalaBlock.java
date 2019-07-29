@@ -15,8 +15,16 @@ public class ScalaBlock implements ScalaCode {
 		this.preBlockCode.append(code);
 	}
 	
+	public void appendPreBlockCode(final ScalaCode code) {
+		appendPreBlockCode(code.getCodeDefinition());
+	}
+	
 	public void appendBlockCode(final StringBuilder code) {
 		this.blockCode.append(code);
+	}
+	
+	public void appendBlockCode(final ScalaCode code) {
+		appendBlockCode(code.getCodeDefinition());
 	}
 	
 	public void setNext(final ScalaBlock next) {

@@ -36,13 +36,13 @@ public class PolicySetHandler implements CodePart {
 		code.appendPreBlockCode(preBlockCode);
 		
 		// components
-		code.appendBlockCode(new ComponentCode().getCodeDefinition());
+		code.appendBlockCode(new ComponentCode());
 		
 		// root ensemble
 		final ScalaBlock rootEnsemble = new ScalaBlock();
 		final ScalaClass systemClass = new ScalaClass(false, "System", ScalaHelper.KEYWORD_ENSEMBLE_ROOT);
 		
-		rootEnsemble.appendPreBlockCode(systemClass.getCodeDefinition());
+		rootEnsemble.appendPreBlockCode(systemClass);
 		
 		// ensembles
 		final List<PolicyType> policies = getPolicies();
@@ -50,14 +50,14 @@ public class PolicySetHandler implements CodePart {
 		for (final PolicyType policy : policies) {
 			final PolicyCodePart policyCodePart = new PolicyCodePart(policy);
 			rulesNames.add(policyCodePart.getActionName());
-			rootEnsemble.appendBlockCode(policyCodePart.getCode().getCodeDefinition());
+			rootEnsemble.appendBlockCode(policyCodePart.getCode());
 			rootEnsemble.appendBlockCode(new StringBuilder("\n"));
 		}
 		
 		// rules
 		rootEnsemble.appendBlockCode(rules(rulesNames));
-		code.appendBlockCode(rootEnsemble.getCodeDefinition());
-		code.appendBlockCode(new ValueInitialisation("rootEnsemble", "root(new " + "System" + ")").getCodeDefinition());
+		code.appendBlockCode(rootEnsemble);
+		code.appendBlockCode(new ValueInitialisation("rootEnsemble", "root(new " + "System" + ")"));
 		
 		// main
 		code.setNext(getMain());
@@ -109,7 +109,7 @@ public class PolicySetHandler implements CodePart {
 				"println(\"deny\")\n" + 
 				"}"));
 		
-		ret.appendBlockCode(main.getCodeDefinition());
+		ret.appendBlockCode(main);
 		return ret;
 	}
 
