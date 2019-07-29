@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.util.ScalaHelper;
 
-public class ScalaClass {
+public class ScalaClass implements ScalaCode {
 	private final boolean singleton;
 	private final String name;
 	private final String superClass;
@@ -23,7 +23,8 @@ public class ScalaClass {
 		this.attributes.addAll(attributes);
 	}
 	
-	public StringBuilder getClassDefinition() {
+	@Override
+	public StringBuilder getCodeDefinition() {
 		return new StringBuilder(this.singleton ? ScalaHelper.KEYWORD_OBJECT : ScalaHelper.KEYWORD_CLASS)
 				.append(" ").append(this.name).append(getAttributeList()).append(" ").append(ScalaHelper.KEYWORD_EXTENDS).append(" ")
 				.append(this.superClass);
@@ -33,7 +34,7 @@ public class ScalaClass {
 		if (!this.attributes.isEmpty()) {
 			final StringBuilder builder = new StringBuilder("(");
 			for (final ValueDeclaration attribute : this.attributes) {
-				builder.append(attribute.getDefinition()).append(", ");
+				builder.append(attribute.getCodeDefinition()).append(", ");
 			}
 			return builder.delete(builder.length() - 2, builder.length()).append(")");
 		}

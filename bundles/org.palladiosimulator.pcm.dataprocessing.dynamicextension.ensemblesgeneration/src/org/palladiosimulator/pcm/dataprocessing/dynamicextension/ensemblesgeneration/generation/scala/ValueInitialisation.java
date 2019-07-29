@@ -2,7 +2,7 @@ package org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgener
 
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.util.ScalaHelper;
 
-public class ValueInitialisation {
+public class ValueInitialisation implements ScalaCode {
 	private final String name;
 	private final String expression;
 	
@@ -11,7 +11,8 @@ public class ValueInitialisation {
 		this.expression = expression;
 	}
 	
-	public StringBuilder getDefinition() {
+	@Override
+	public StringBuilder getCodeDefinition() {
 		return new StringBuilder(ScalaHelper.KEYWORD_VAL).append(" ").append(this.name)
 				.append(" = ").append(this.expression).append("\n");
 	}

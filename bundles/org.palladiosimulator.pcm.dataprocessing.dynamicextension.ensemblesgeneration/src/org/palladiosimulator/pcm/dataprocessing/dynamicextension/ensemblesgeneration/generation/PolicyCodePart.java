@@ -1,7 +1,7 @@
 package org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation;
 
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ScalaClass;
-import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ScalaCode;
+import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ScalaBlock;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ValueInitialisation;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.xacml.AttributeExtractor;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.util.ScalaHelper;
@@ -21,13 +21,13 @@ public class PolicyCodePart implements CodePart {
 	}
 	
 	@Override
-	public ScalaCode getCode() {
+	public ScalaBlock getCode() {
 		//TODO: constants
 		
-		final ScalaCode ensembleCode = new ScalaCode();
+		final ScalaBlock ensembleCode = new ScalaBlock();
 		
 		final var actionEnsembleClass = new ScalaClass(true, this.actionName, ScalaHelper.KEYWORD_ENSEMBLE);
-		ensembleCode.appendPreBlockCode(actionEnsembleClass.getClassDefinition());
+		ensembleCode.appendPreBlockCode(actionEnsembleClass.getCodeDefinition());
 		
 		//TODO adding all component vals
 		final var attributeExtractor = new AttributeExtractor("context:shift:name", "shiftName");
@@ -36,7 +36,7 @@ public class PolicyCodePart implements CodePart {
 				+ "filter(" + AttributeExtractor.VAR_NAME +  " => " + attributeExtractor.extract(this.policy) + ")"
 				+ mapping;
 		
-		ensembleCode.appendBlockCode(new ValueInitialisation("allowedSubjects", expression).getDefinition());
+		ensembleCode.appendBlockCode(new ValueInitialisation("allowedSubjects", expression).getCodeDefinition());
 		
 		//TODO adding situation
 		

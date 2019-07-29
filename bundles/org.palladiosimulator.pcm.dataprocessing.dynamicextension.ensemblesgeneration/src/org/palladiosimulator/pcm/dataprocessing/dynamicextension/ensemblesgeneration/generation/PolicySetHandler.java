@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ScalaClass;
-import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ScalaCode;
+import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ScalaBlock;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ValueDeclaration;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ValueInitialisation;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.handlers.SampleHandler;
@@ -26,15 +26,16 @@ public class PolicySetHandler implements CodePart {
 		this.policySet = policySet;
 	}
 	
-	public ScalaCode getCode() {
+	@Override
+	public ScalaBlock getCode() {
 		//TODO constants
 		
-		final ScalaCode code = new ScalaCode();
+		final ScalaBlock code = new ScalaBlock();
 		final ScalaClass modelClass = new ScalaClass(false, MODEL_CLASS_NAME, ScalaHelper.KEYWORD_MODEL);
 		
 		var preBlockCode = new StringBuilder("package scenarios\n")
 				.append("import tcof.{Component, _}\n")
-				.append(modelClass.getClassDefinition());
+				.append(modelClass.getCodeDefinition());
 		code.appendPreBlockCode(preBlockCode);
 		
 		// components generation
@@ -42,25 +43,25 @@ public class PolicySetHandler implements CodePart {
 		code.appendBlockCode(getResourceComponentCode().append("\n"));
 		code.appendBlockCode(getEnvironmentComponentCode().append("\n"));
 		
-		final ScalaCode rootEnsemble = new ScalaCode();
+		final ScalaBlock rootEnsemble = new ScalaBlock();
 		final ScalaClass systemClass = new ScalaClass(false, "System", ScalaHelper.KEYWORD_ENSEMBLE_ROOT);
 		
 		//TODO adding all component information
 		//TODO probably in main into components field
 		//systemClass.addAllAttributes(Arrays.asList(new ValueDeclaration("subjects", "List[Subject]"))); 
 		
-		rootEnsemble.appendPreBlockCode(systemClass.getClassDefinition());
+		rootEnsemble.appendPreBlockCode(systemClass.getCodeDefinition());
 		final List<PolicyType> policies = getPolicies();
 		final List<String> rulesNames = new ArrayList<>();
 		for (final PolicyType policy : policies) {
 			final PolicyCodePart policyCodePart = new PolicyCodePart(policy);
 			rulesNames.add(policyCodePart.getActionName());
-			rootEnsemble.appendBlockCode(policyCodePart.getCode().getCode());
+			rootEnsemble.appendBlockCode(policyCodePart.getCode().getCodeDefinition());
 			rootEnsemble.appendBlockCode(new StringBuilder("\n"));
 		}
 		rootEnsemble.appendBlockCode(rules(rulesNames));
-		code.appendBlockCode(rootEnsemble.getCode());
-		code.appendBlockCode(new ValueInitialisation("rootEnsemble", "root(new " + "System" + ")").getDefinition());
+		code.appendBlockCode(rootEnsemble.getCodeDefinition());
+		code.appendBlockCode(new ValueInitialisation("rootEnsemble", "root(new " + "System" + ")").getCodeDefinition());
 		
 		code.setNext(getMain());
 		
@@ -73,22 +74,22 @@ public class PolicySetHandler implements CodePart {
 		final List<ValueDeclaration> subjectAttributes = new ArrayList<>();
 		subjectAttributes.add(new ValueDeclaration("subjectName", ScalaHelper.KEYWORD_STRING)); 
 		//TODO: verallg. auf alle subject attr., bzw. dann auch auf alle attr. (in den anderen components)
-		subjectAttributes.add(new ValueDeclaration("shiftName", ScalaHelper.KEYWORD_STRING)); 
+		subjectAttributes.add(new ValueDeclaration("shiftName", ScalaHelper.KEYWORD_STRING, true)); 
 		subjectClass.addAllAttributes(subjectAttributes);
 		
-		return subjectClass.getClassDefinition().append("\n");
+		return subjectClass.getCodeDefinition().append("\n");
 	}
 	
 	private StringBuilder getResourceComponentCode() {
 		final var resourceClass = new ScalaClass(false, RESOURCE_CLASS_NAME, ScalaHelper.KEYWORD_COMPONENT);
 		// TODO Auto-generated method stub
-		return resourceClass.getClassDefinition().append("\n");
+		return resourceClass.getCodeDefinition().append("\n");
 	}
 	
 	private StringBuilder getEnvironmentComponentCode() {
 		final var environmentClass = new ScalaClass(false, ENVIRONMENT_CLASS_NAME, ScalaHelper.KEYWORD_COMPONENT);
 		// TODO Auto-generated method stub
-		return environmentClass.getClassDefinition().append("\n");
+		return environmentClass.getCodeDefinition().append("\n");
 	}
 
 	private List<PolicyType> getPolicies() {
@@ -113,11 +114,11 @@ public class PolicySetHandler implements CodePart {
 		return ret.delete(ret.length() - 2,ret.length()).append(")\n");
 	}
 	
-	private ScalaCode getMain() {
-		final ScalaCode ret = new ScalaCode();
+	private ScalaBlock getMain() {
+		final ScalaBlock ret = new ScalaBlock();
 		
 		ret.appendPreBlockCode(new StringBuilder("object RunningExample"));
-		final ScalaCode main = new ScalaCode();
+		final ScalaBlock main = new ScalaBlock();
 		main.appendPreBlockCode(new StringBuilder("def main(args: Array[String]): Unit ="));
 		
 		//TODO (evtl. noch automatisiert generieren)
@@ -134,7 +135,7 @@ public class PolicySetHandler implements CodePart {
 				"println(\"deny\")\n" + 
 				"}"));
 		
-		ret.appendBlockCode(main.getCode());
+		ret.appendBlockCode(main.getCodeDefinition());
 		return ret;
 	}
 
