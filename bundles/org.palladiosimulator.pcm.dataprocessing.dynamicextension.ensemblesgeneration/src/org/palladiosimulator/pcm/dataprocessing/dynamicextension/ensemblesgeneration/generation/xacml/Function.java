@@ -9,14 +9,28 @@ public enum Function {
 	STRING_EQUALS(XACML3.ID_FUNCTION_STRING_EQUAL.stringValue(), Attribute.TYPE_STRING) {
 		@Override
 		protected StringBuilder getCheckCode(final String scalaAttributeName, final String value) {
-			return ScalaHelper.parenthesize(new StringBuilder()
-					.append(AttributeExtractor.VAR_NAME)
+			return ScalaHelper.parenthesize(new StringBuilder(AttributeExtractor.VAR_NAME)
 					.append(".")
 					.append(scalaAttributeName)
 					.append(" == ")
 					.append("\"")
 					.append(value)
 					.append("\""));
+		}
+	},
+	STRING_REGEX(XACML3.ID_FUNCTION_STRING_REGEXP_MATCH.stringValue(), Attribute.TYPE_STRING) {
+		@Override
+		protected StringBuilder getCheckCode(String scalaAttributeName, String value) {
+			final StringBuilder nullCheck = nullCheck(scalaAttributeName);
+			final StringBuilder matchAgainstValue = ScalaHelper.parenthesize(new StringBuilder("\"")
+					.append(value.replaceAll("\\\\", "\\\\\\\\")).append("\""));
+			return ScalaHelper.parenthesize(nullCheck
+					.append(AttributeExtractor.VAR_NAME)
+					.append(".")
+					.append(scalaAttributeName)
+					.append(".")
+					.append("matches")
+					.append(matchAgainstValue));
 		}
 	};
 	
@@ -45,5 +59,12 @@ public enum Function {
 			}
 		}
 		return null;
+	}
+	
+	private static StringBuilder nullCheck(final String scalaAttributeName) {
+		return new StringBuilder(AttributeExtractor.VAR_NAME)
+				.append(".")
+				.append(scalaAttributeName)
+				.append(" != null && ");
 	}
 }

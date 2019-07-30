@@ -34,11 +34,15 @@ public class RuleAttributeExtractor {
 					tmp = getMatchesConcerningAttributeId(matches, attribute);
 					final var values = tmp.map(m -> (String) (m.getAttributeValue().getContent().get(0)));
 					for (final String value : values.collect(Collectors.toList())) {
-						ret.append(attribute.getCheckCode(value)).append(" && ");
+						ret.append(attribute.getCheckCode(value));
+						ret.append(" && ");
 					}
-					// removing last " && " and parenthesizing
-					ScalaHelper.parenthesize(ret.delete(ret.length() - 4, ret.length()));
 				}
+			}
+			
+			if (ret.length() > 0) {
+				// removing last " && " and parenthesizing
+				ScalaHelper.parenthesize(ret.delete(ret.length() - 4, ret.length()));
 			}
 		}
 
