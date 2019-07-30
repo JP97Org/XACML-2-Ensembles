@@ -24,7 +24,7 @@ public class SampleHandler extends AbstractHandler {
 	private static final String DIR_POLICYSETS = "out/";
 	private static final String DIR_SCALA_OUTPUT = "BA/workspace/ScalaEnsembleTester/src/main/scala/scenarios/"; //TODO
 	
-	private static final String FILENAME_POLICYSET = "UC-Test.xml";
+	private static final String FILENAME_POLICYSET = "UC-Test.xml"; //"UC-Shift.xml";
 	private static final String FILENAME_SCALA_OUTPUT = "out.scala";
 	////////////////////////////////////////////////////////////////////////////////////////////
 

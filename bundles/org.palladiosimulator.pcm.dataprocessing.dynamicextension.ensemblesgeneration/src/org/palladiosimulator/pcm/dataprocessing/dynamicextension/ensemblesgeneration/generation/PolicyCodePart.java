@@ -45,18 +45,22 @@ public class PolicyCodePart implements CodePart {
 		final String resourceFieldName = "allowedResources";
 		ensembleCode.appendBlockCode(new ValueInitialisation(resourceFieldName, resourceExpression));
 		
-		// TODO: environment
+		// environment
+		final var environmentExtractor = new AttributeExtractor(this.policy, Category.ENVIRONMENT);
+		ensembleCode.appendBlockCode(situation(environmentExtractor.extract()));
 		
-		//TODO maybe adding situation
-		
+		ensembleCode.appendBlockCode(new StringBuilder("\n"));
 		ensembleCode.appendBlockCode(allow(subjectFieldName, this.actionName, resourceFieldName));
 		
 		return ensembleCode;
 	}
 	
 	private String getExpression(final String categoryClassName, final AttributeExtractor extractor) {
+		final StringBuilder extractionResult = extractor.extract();
 		return "components.select[" + categoryClassName +"]."
-				+ "filter(" + AttributeExtractor.VAR_NAME +  " => " + extractor.extract() + ")"
+				+ "filter(" + AttributeExtractor.VAR_NAME +  " => " 
+				+ (extractionResult.length() == 0 ? "true" : extractionResult)
+				+ ")"
 				+ MAPPING;
 	}
 	
@@ -64,7 +68,14 @@ public class PolicyCodePart implements CodePart {
 		return new StringBuilder(ScalaHelper.KEYWORD_ALLOW)
 				.append("(").append(subjects).append(", ")
 				.append("\"").append(action).append("\", ")
-				.append(resourceName).append(")\n");
+				.append(resourceName).append(")");
+	}
+	
+	private StringBuilder situation(final StringBuilder expression) {
+		if (expression.length() > 0) {
+			return expression.insert(0, "situation {\n").append("\n}");
+		}
+		return expression;
 	}
 	
 	public String getActionName() {

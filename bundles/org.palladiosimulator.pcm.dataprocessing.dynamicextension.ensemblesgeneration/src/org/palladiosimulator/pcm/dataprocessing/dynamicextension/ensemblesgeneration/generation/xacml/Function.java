@@ -5,7 +5,6 @@ import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgenera
 import com.att.research.xacml.api.XACML3;
 
 public enum Function {
-	// TODO other functions: less time, great time
 	STRING_EQUALS(XACML3.ID_FUNCTION_STRING_EQUAL.stringValue(), Attribute.TYPE_STRING) {
 		@Override
 		protected StringBuilder getCheckCode(final String scalaAttributeName, final String value) {
@@ -36,31 +35,46 @@ public enum Function {
 	LESS_INT(XACML3.ID_FUNCTION_INTEGER_LESS_THAN.stringValue(), Attribute.TYPE_INT) {
 		@Override
 		protected StringBuilder getCheckCode(String scalaAttributeName, String value) {
-			// value defined in policy must be less than the request value 
+			// value defined in policy ('value') must be less than the request value 
 			return compare(scalaAttributeName, " > ", value);
 		}
 	},
 	LESS_DOUBLE(XACML3.ID_FUNCTION_DOUBLE_LESS_THAN.stringValue(), Attribute.TYPE_DOUBLE) {
 		@Override
 		protected StringBuilder getCheckCode(String scalaAttributeName, String value) {
-			// value defined in policy must be less than the request value 
+			// value defined in policy ('value') must be less than the request value 
 			return compare(scalaAttributeName, " > ", value);
 		}
 	},
 	GREATER_INT(XACML3.ID_FUNCTION_INTEGER_GREATER_THAN.stringValue(), Attribute.TYPE_INT) {
 		@Override
 		protected StringBuilder getCheckCode(String scalaAttributeName, String value) {
-			// value defined in policy must be greater than the request value 
+			// value defined in policy ('value') must be greater than the request value 
 			return compare(scalaAttributeName, " < ", value);
 		}
 	},
 	GREATER_DOUBLE(XACML3.ID_FUNCTION_DOUBLE_GREATER_THAN.stringValue(), Attribute.TYPE_DOUBLE) {
 		@Override
 		protected StringBuilder getCheckCode(String scalaAttributeName, String value) {
-			// value defined in policy must be greater than the request value 
+			// value defined in policy ('value') must be greater than the request value 
 			return compare(scalaAttributeName, " < ", value);
 		}
-	};
+	},
+	LESS_TIME(XACML3.ID_FUNCTION_TIME_LESS_THAN_OR_EQUAL.stringValue(), Attribute.TYPE_TIME) {
+		@Override
+		protected StringBuilder getCheckCode(String scalaAttributeName, String value) {
+			// time defined in policy ('value') must be less than the request value
+			return compareTime(scalaAttributeName, " isAfter ", value);
+		}
+	},
+	GREATER_TIME(XACML3.ID_FUNCTION_TIME_GREATER_THAN_OR_EQUAL.stringValue(), Attribute.TYPE_TIME) {
+		@Override
+		protected StringBuilder getCheckCode(String scalaAttributeName, String value) {
+			// time defined in policy ('value') must be greater than the request value
+			return compareTime(scalaAttributeName, " isBefore ", value);
+		}
+	}
+	;
 	
 	private final String matchId;
 	private final String scalaType;
@@ -102,5 +116,20 @@ public enum Function {
 				.append(scalaAttributeName)
 				.append(comparison)
 				.append(value));
+	}
+	
+	private static StringBuilder compareTime(String scalaAttributeName, String comparison, String value) {
+		final StringBuilder parsedValue = ScalaHelper.parenthesize(new StringBuilder("LocalTime.parse(\"")
+				.append(value)
+				.append("\", DateTimeFormatter.ISO_OFFSET_TIME)"));
+		final StringBuilder comparisonStringBuilder = ScalaHelper.parenthesize(new StringBuilder(scalaAttributeName)
+				.append(comparison)
+				.append(parsedValue));
+		final StringBuilder equalityStringBuilder = ScalaHelper.parenthesize(new StringBuilder(scalaAttributeName)
+				.append(" equals ")
+				.append(parsedValue));
+		return ScalaHelper.parenthesize(comparisonStringBuilder
+				.append(" || ")
+				.append(equalityStringBuilder));
 	}
 }

@@ -16,5 +16,7 @@ Bundle-ActivationPolicy: lazy
 Export-Package: org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration,
  org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.MainLoader,
  org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation,
+ org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala,
+ org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.xacml,
  org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.handlers,
  org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.util

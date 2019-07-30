@@ -1,9 +1,11 @@
 package org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ScalaClass;
+import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ValueDeclaration;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ScalaBlock;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ValueInitialisation;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.xacml.ComponentCode;
@@ -29,9 +31,14 @@ public class PolicySetHandler implements CodePart {
 		final ScalaBlock code = new ScalaBlock();
 		
 		final ScalaClass modelClass = new ScalaClass(false, MODEL_CLASS_NAME, ScalaHelper.KEYWORD_MODEL);
-		// package and imports
+		modelClass.addAllAttributes(Arrays.asList(new ValueDeclaration("now", "LocalTime")));
+		
+		// package, imports and model class definition 
 		var preBlockCode = new StringBuilder("package scenarios\n")
 				.append("import tcof.{Component, _}\n")
+				.append("import java.time._\n")
+				.append("import java.time.format._\n")
+				.append("\n")
 				.append(modelClass.getCodeDefinition());
 		code.appendPreBlockCode(preBlockCode);
 		
@@ -95,7 +102,7 @@ public class PolicySetHandler implements CodePart {
 		main.appendPreBlockCode(new StringBuilder("def main(args: Array[String]): Unit ="));
 		
 		//TODO (evtl. noch automatisiert generieren)
-		main.appendBlockCode(new StringBuilder("val scenario = new RunningExample\n" + 
+		main.appendBlockCode(new StringBuilder("val scenario = new RunningExample(LocalTime.parse(\"13:00:00Z\", DateTimeFormatter.ISO_OFFSET_TIME))\n" + 
 				"val subjectA = new scenario.Subject(\"A\", \"Production_Hall_Section_1\", \"ASub\", \"Worker\", \"Shift 1\")\n" + 
 				"val subjectB = new scenario.Subject(\"B\", \"Shift 2\")\n" + 
 				"val resourceA = new scenario.Resource(\"machine\", \"INCIDENT_HAPPENED\", \"PUBLIC\", 5, 4)\n" + 

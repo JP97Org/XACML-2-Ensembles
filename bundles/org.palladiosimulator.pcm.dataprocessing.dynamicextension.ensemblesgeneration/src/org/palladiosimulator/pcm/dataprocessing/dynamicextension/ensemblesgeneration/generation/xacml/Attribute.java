@@ -4,8 +4,9 @@ import java.util.Comparator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import com.att.research.xacml.api.XACML3;
+
 public enum Attribute {
-	//TODO other attributes
 	INTERNALSTATE(Category.RESOURCE, "context:internalstate", "internalstate", Function.STRING_EQUALS),
 	SHIFT_NAME(Category.SUBJECT, "context:shift:name", "shiftName", Function.STRING_EQUALS),
 	ORGANISATION(Category.SUBJECT, "context:organisation", "organisation", Function.STRING_REGEX),
@@ -15,12 +16,14 @@ public enum Attribute {
 	LESS_INT(Category.RESOURCE, "context:comparison:int", "valueInt", Function.LESS_INT),
 	GREATER_INT(Category.RESOURCE, "context:comparison:int", "valueInt", Function.GREATER_INT),
 	LESS_DOUBLE(Category.RESOURCE, "context:comparison:double", "valueDouble", Function.LESS_DOUBLE),
-	GREATER_DOUBLE(Category.RESOURCE, "context:comparison:double", "valueDouble", Function.GREATER_DOUBLE);
+	GREATER_DOUBLE(Category.RESOURCE, "context:comparison:double", "valueDouble", Function.GREATER_DOUBLE),
+	LESS_TIME(Category.ENVIRONMENT, XACML3.ID_ENVIRONMENT_CURRENT_TIME.stringValue(), "now", Function.LESS_TIME),
+	GREATER_TIME(Category.ENVIRONMENT, XACML3.ID_ENVIRONMENT_CURRENT_TIME.stringValue(), "now", Function.GREATER_TIME);
 	
 	protected static final String TYPE_STRING = "String";
 	protected static final String TYPE_INT = "Int";
 	protected static final String TYPE_DOUBLE = "Double";
-	//TODO: TYPE_TIME
+	protected static final String TYPE_TIME = "LocalTime";
 	
 	private final Category attributeCategory;
 	private final String attributeId;

@@ -17,7 +17,6 @@ public class ComponentCode implements ScalaCode {
 	public StringBuilder getCodeDefinition() {
 		final StringBuilder ret = new StringBuilder(getSubjectComponentCode()).append("\n");
 		ret.append(getResourceComponentCode()).append("\n");
-		ret.append(getEnvironmentComponentCode()).append("\n");
 		return ret;
 	}
 	
@@ -27,10 +26,6 @@ public class ComponentCode implements ScalaCode {
 	
 	private StringBuilder getResourceComponentCode() {
 		return getComponentCode(RESOURCE_CLASS_NAME, "resourceName", true, Category.RESOURCE);
-	}
-	
-	private StringBuilder getEnvironmentComponentCode() {
-		return getComponentCode(ENVIRONMENT_CLASS_NAME, null, false, Category.ENVIRONMENT);
 	}
 	
 	private StringBuilder getComponentCode(final String className, final String categoryScalaName, final boolean isOptional, final Category category) {
