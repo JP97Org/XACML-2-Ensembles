@@ -42,7 +42,11 @@ public class ComponentCode implements ScalaCode {
 		}
 			
 		for (final Attribute attribute : Attribute.getCategoryAttributes(category)) {
-			attributes.add(new ValueDeclaration(attribute.getScalaAttributeName(), attribute.getScalaType(), true));
+			final var declaration = 
+					new ValueDeclaration(attribute.getScalaAttributeName(), attribute.getScalaType(), true);
+			if (!attributes.contains(declaration)) {
+				attributes.add(declaration);
+			}
 		}
 		
 		componentClass.addAllAttributes(attributes);

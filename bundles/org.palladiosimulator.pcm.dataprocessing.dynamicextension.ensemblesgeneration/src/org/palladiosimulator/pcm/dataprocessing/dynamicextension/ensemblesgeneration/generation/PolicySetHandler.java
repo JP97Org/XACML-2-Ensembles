@@ -98,7 +98,7 @@ public class PolicySetHandler implements CodePart {
 		main.appendBlockCode(new StringBuilder("val scenario = new RunningExample\n" + 
 				"val subjectA = new scenario.Subject(\"A\", \"Production_Hall_Section_1\", \"ASub\", \"Worker\", \"Shift 1\")\n" + 
 				"val subjectB = new scenario.Subject(\"B\", \"Shift 2\")\n" + 
-				"val resourceA = new scenario.Resource(\"machine\", \"INCIDENT_HAPPENED\", \"PUBLIC\")\n" + 
+				"val resourceA = new scenario.Resource(\"machine\", \"INCIDENT_HAPPENED\", \"PUBLIC\", 5, 4)\n" + 
 				"scenario.components = List(subjectA, subjectB, resourceA)\n" + 
 				"scenario.rootEnsemble.init()\n" + 
 				"scenario.rootEnsemble.solve()\n" + 

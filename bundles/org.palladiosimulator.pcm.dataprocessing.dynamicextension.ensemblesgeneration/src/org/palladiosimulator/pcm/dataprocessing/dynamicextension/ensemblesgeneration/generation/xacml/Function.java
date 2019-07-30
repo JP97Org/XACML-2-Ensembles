@@ -5,7 +5,7 @@ import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgenera
 import com.att.research.xacml.api.XACML3;
 
 public enum Function {
-	// TODO other functions
+	// TODO other functions: less time, great time
 	STRING_EQUALS(XACML3.ID_FUNCTION_STRING_EQUAL.stringValue(), Attribute.TYPE_STRING) {
 		@Override
 		protected StringBuilder getCheckCode(final String scalaAttributeName, final String value) {
@@ -31,6 +31,34 @@ public enum Function {
 					.append(".")
 					.append("matches")
 					.append(matchAgainstValue));
+		}
+	},
+	LESS_INT(XACML3.ID_FUNCTION_INTEGER_LESS_THAN.stringValue(), Attribute.TYPE_INT) {
+		@Override
+		protected StringBuilder getCheckCode(String scalaAttributeName, String value) {
+			// value defined in policy must be less than the request value 
+			return compare(scalaAttributeName, " > ", value);
+		}
+	},
+	LESS_DOUBLE(XACML3.ID_FUNCTION_DOUBLE_LESS_THAN.stringValue(), Attribute.TYPE_DOUBLE) {
+		@Override
+		protected StringBuilder getCheckCode(String scalaAttributeName, String value) {
+			// value defined in policy must be less than the request value 
+			return compare(scalaAttributeName, " > ", value);
+		}
+	},
+	GREATER_INT(XACML3.ID_FUNCTION_INTEGER_GREATER_THAN.stringValue(), Attribute.TYPE_INT) {
+		@Override
+		protected StringBuilder getCheckCode(String scalaAttributeName, String value) {
+			// value defined in policy must be greater than the request value 
+			return compare(scalaAttributeName, " < ", value);
+		}
+	},
+	GREATER_DOUBLE(XACML3.ID_FUNCTION_DOUBLE_GREATER_THAN.stringValue(), Attribute.TYPE_DOUBLE) {
+		@Override
+		protected StringBuilder getCheckCode(String scalaAttributeName, String value) {
+			// value defined in policy must be greater than the request value 
+			return compare(scalaAttributeName, " < ", value);
 		}
 	};
 	
@@ -66,5 +94,13 @@ public enum Function {
 				.append(".")
 				.append(scalaAttributeName)
 				.append(" != null && ");
+	}
+	
+	private static StringBuilder compare(final String scalaAttributeName, final String comparison, final String value) {
+		return ScalaHelper.parenthesize(new StringBuilder(AttributeExtractor.VAR_NAME)
+				.append(".")
+				.append(scalaAttributeName)
+				.append(comparison)
+				.append(value));
 	}
 }

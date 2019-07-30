@@ -11,7 +11,11 @@ public enum Attribute {
 	ORGANISATION(Category.SUBJECT, "context:organisation", "organisation", Function.STRING_REGEX),
 	ROLE(Category.SUBJECT, "context:role", "role", Function.STRING_REGEX),
 	LOCATION(Category.SUBJECT, "context:location", "location", Function.STRING_REGEX),
-	PRIVACYLEVEL(Category.RESOURCE, "context:privacylevel", "privacylevel", Function.STRING_REGEX);
+	PRIVACYLEVEL(Category.RESOURCE, "context:privacylevel", "privacylevel", Function.STRING_REGEX),
+	LESS_INT(Category.RESOURCE, "context:comparison:int", "valueInt", Function.LESS_INT),
+	GREATER_INT(Category.RESOURCE, "context:comparison:int", "valueInt", Function.GREATER_INT),
+	LESS_DOUBLE(Category.RESOURCE, "context:comparison:double", "valueDouble", Function.LESS_DOUBLE),
+	GREATER_DOUBLE(Category.RESOURCE, "context:comparison:double", "valueDouble", Function.GREATER_DOUBLE);
 	
 	protected static final String TYPE_STRING = "String";
 	protected static final String TYPE_INT = "Int";

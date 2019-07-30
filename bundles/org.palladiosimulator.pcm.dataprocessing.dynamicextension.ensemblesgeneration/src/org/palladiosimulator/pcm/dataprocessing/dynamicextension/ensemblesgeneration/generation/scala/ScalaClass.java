@@ -19,8 +19,8 @@ public class ScalaClass implements ScalaCode {
 		this.attributes = new ArrayList<>();
 	}
 	
-	public void addAllAttributes(final List<ValueDeclaration> attributes) {
-		this.attributes.addAll(attributes);
+	public void addAllAttributes(final List<ValueDeclaration> attribute) {
+		this.attributes.addAll(attribute);
 	}
 	
 	@Override
