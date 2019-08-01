@@ -1,6 +1,8 @@
 package org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.xacml;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -18,8 +20,18 @@ public class RuleAttributeExtractor {
 		this.rule = rule;
 		this.category = category;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public Set<Attribute> extractExisitingAttributes() {
+		return (Set<Attribute>) (extract(true));
+	}
 
 	public StringBuilder extract() {
+		return (StringBuilder) (extract(false));
+	}
+	
+	private Object extract(final boolean extractAttributeSet) {
+		final Set<Attribute> setRet = new HashSet<Attribute>();
 		final StringBuilder ret = new StringBuilder();
 		final TargetType target = this.rule.getTarget();
 		if (target.getAnyOf().size() > 0) {
@@ -30,13 +42,16 @@ public class RuleAttributeExtractor {
 			final List<MatchType> matches = allOfs.get(0).getMatch();
 			for (var attribute : Attribute.getCategoryAttributes(this.category)) {
 				var tmp = getMatchesConcerningAttributeId(matches, attribute);
-				if (tmp.count() > 0) {
+				final boolean isEmpty = tmp.count() == 0;
+				if (!isEmpty && !extractAttributeSet) {
 					tmp = getMatchesConcerningAttributeId(matches, attribute);
 					final var values = tmp.map(m -> (String) (m.getAttributeValue().getContent().get(0)));
 					for (final String value : values.collect(Collectors.toList())) {
 						ret.append(attribute.getCheckCode(value));
 						ret.append(" && ");
 					}
+				} else if (!isEmpty && extractAttributeSet) {
+					setRet.add(attribute);
 				}
 			}
 			
@@ -46,7 +61,7 @@ public class RuleAttributeExtractor {
 			}
 		}
 
-		return ret;
+		return extractAttributeSet ? setRet : ret;
 	}
 
 	private Stream<MatchType> getMatchesConcerningAttributeId(final List<MatchType> matches, final Attribute attribute) {

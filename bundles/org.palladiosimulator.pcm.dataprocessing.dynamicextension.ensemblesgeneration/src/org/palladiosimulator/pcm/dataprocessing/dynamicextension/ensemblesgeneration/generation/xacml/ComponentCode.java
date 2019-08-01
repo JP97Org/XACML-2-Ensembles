@@ -2,7 +2,9 @@ package org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgener
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ScalaBlock;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ScalaClass;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ScalaCode;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ValueDeclaration;
@@ -12,6 +14,12 @@ public class ComponentCode implements ScalaCode {
 	public static final String SUBJECT_CLASS_NAME = "Subject";
 	public static final String RESOURCE_CLASS_NAME = "Resource";
 	public static final String ENVIRONMENT_CLASS_NAME = "Environment";
+	
+	private final Set<Attribute> existingAttributes;
+	
+	public ComponentCode(final Set<Attribute> existingAttributes) {
+		this.existingAttributes = existingAttributes;
+	}
 	
 	@Override
 	public StringBuilder getCodeDefinition() {
@@ -25,7 +33,7 @@ public class ComponentCode implements ScalaCode {
 	}
 	
 	private StringBuilder getResourceComponentCode() {
-		return getComponentCode(RESOURCE_CLASS_NAME, "resourceName", true, Category.RESOURCE);
+		return getComponentCode(RESOURCE_CLASS_NAME, "resourceName", false, Category.RESOURCE);
 	}
 	
 	private StringBuilder getComponentCode(final String className, final String categoryScalaName, final boolean isOptional, final Category category) {
@@ -37,15 +45,23 @@ public class ComponentCode implements ScalaCode {
 		}
 			
 		for (final Attribute attribute : Attribute.getCategoryAttributes(category)) {
-			final var declaration = 
-					new ValueDeclaration(attribute.getScalaAttributeName(), attribute.getScalaType(), true);
-			if (!attributes.contains(declaration)) {
-				attributes.add(declaration);
+			if (this.existingAttributes.contains(attribute)) {
+				final var declaration = 
+						new ValueDeclaration(attribute.getScalaAttributeName(), attribute.getScalaType(), true);
+				if (!attributes.contains(declaration)) {
+					attributes.add(declaration);
+				}
 			}
 		}
 		
 		componentClass.addAllAttributes(attributes);
 		
-		return componentClass.getCodeDefinition().append("\n");
+		final ScalaBlock classBlock = new ScalaBlock();
+		classBlock.appendPreBlockCode(componentClass);
+		//TODO scala: aufruf
+		// name setting
+		classBlock.appendBlockCode(new StringBuilder("name(s\"" + className +" $" + categoryScalaName + "\")"));
+		
+		return classBlock.getCodeDefinition().append("\n");
 	}
 }

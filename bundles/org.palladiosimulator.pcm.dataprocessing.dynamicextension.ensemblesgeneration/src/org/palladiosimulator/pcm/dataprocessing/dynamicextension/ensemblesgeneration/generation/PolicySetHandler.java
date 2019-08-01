@@ -2,12 +2,17 @@ package org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgener
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ScalaClass;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ValueDeclaration;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ScalaBlock;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ValueInitialisation;
+import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.xacml.Attribute;
+import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.xacml.AttributeExtractor;
+import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.xacml.Category;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.xacml.ComponentCode;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.handlers.SampleHandler;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.util.ScalaHelper;
@@ -38,12 +43,21 @@ public class PolicySetHandler implements CodePart {
 				.append("import tcof.{Component, _}\n")
 				.append("import java.time._\n")
 				.append("import java.time.format._\n")
+				.append("import java.util.Collection\n") 
+				.append("import java.util.ArrayList\n")
 				.append("\n")
 				.append(modelClass.getCodeDefinition());
 		code.appendPreBlockCode(preBlockCode);
 		
 		// components
-		code.appendBlockCode(new ComponentCode());
+		final Set<Attribute> existingAttributes = new HashSet<>();
+		final List<PolicyType> policies = getPolicies();
+		for (final PolicyType policy : policies) {
+			for (final Category category : Category.values()) {
+				existingAttributes.addAll(new AttributeExtractor(policy, category).extractExisitingAttributes());
+			}
+		}
+		code.appendBlockCode(new ComponentCode(existingAttributes));
 		
 		// root ensemble
 		final ScalaBlock rootEnsemble = new ScalaBlock();
@@ -52,7 +66,6 @@ public class PolicySetHandler implements CodePart {
 		rootEnsemble.appendPreBlockCode(systemClass);
 		
 		// ensembles
-		final List<PolicyType> policies = getPolicies();
 		final List<String> rulesNames = new ArrayList<>();
 		for (final PolicyType policy : policies) {
 			final PolicyCodePart policyCodePart = new PolicyCodePart(policy);
@@ -66,7 +79,7 @@ public class PolicySetHandler implements CodePart {
 		code.appendBlockCode(rootEnsemble);
 		code.appendBlockCode(new ValueInitialisation("rootEnsemble", "root(new " + "System" + ")"));
 		
-		// main
+		// helper-method(s) and main
 		code.setNext(getMain());
 		
 		return code;
@@ -87,17 +100,24 @@ public class PolicySetHandler implements CodePart {
 	}
 	
 	private StringBuilder rules(final List<String> rulesNames) {
-		final StringBuilder ret = new StringBuilder("val allRules = rules(");
-		for (final String rulesName : rulesNames) {
-			ret.append(rulesName).append(", ");
+		final StringBuilder ret = new StringBuilder();
+		for (final String ruleName : rulesNames) {
+			//TODO scala call
+			final ValueInitialisation ruleValue = new ValueInitialisation(ruleName + "Rule", "rules(" + ruleName + ")");
+			ret.append(ruleValue.getCodeDefinition());
 		}
-		return ret.delete(ret.length() - 2,ret.length()).append(")\n");
+		return ret.append("\n");
 	}
 	
 	private ScalaBlock getMain() {
 		final ScalaBlock ret = new ScalaBlock();
 		
 		ret.appendPreBlockCode(new StringBuilder("object RunningExample"));
+		
+		// helper function which converts iterable to collection
+		ret.appendBlockCode(convert());
+		ret.appendBlockCode(new StringBuilder("\n"));
+		
 		final ScalaBlock main = new ScalaBlock();
 		main.appendPreBlockCode(new StringBuilder("def main(args: Array[String]): Unit ="));
 		
@@ -109,7 +129,7 @@ public class PolicySetHandler implements CodePart {
 				"scenario.components = List(subjectA, subjectB, resourceA)\n" + 
 				"scenario.rootEnsemble.init()\n" + 
 				"scenario.rootEnsemble.solve()\n" + 
-				"val testActionAllow = scenario.rootEnsemble.instance.allRules.selectedMembers.exists(x => !x.allowedSubjects.isEmpty && !x.allowedResources.isEmpty)\n" + 
+				"val testActionAllow = scenario.rootEnsemble.instance.testActionRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && !convertToCol(x.allowedSubjects).contains(subjectB))\n" + 
 				"if(testActionAllow) {\n" + 
 				"println(\"allow\")\n" + 
 				"} else {\n" + 
@@ -119,5 +139,21 @@ public class PolicySetHandler implements CodePart {
 		ret.appendBlockCode(main);
 		return ret;
 	}
+	
+	private ScalaBlock convert() {
+		//TODO scala method
+		final ScalaBlock ret = new ScalaBlock();
+		ret.appendPreBlockCode(new StringBuilder("def convertToCol(iterable: Iterable[Component]) : Collection[Component] ="));
 
+		ret.appendBlockCode(new StringBuilder("val collection = new ArrayList[Component]\n" + 
+				"\n" + 
+				"val iter = iterable.iterator\n" + 
+				"while (iter.hasNext) {\n" + 
+				"collection.add(iter.next)\n" + 
+				"}\n" + 
+				"\n" + 
+				"return collection"));
+		
+		return ret;
+	}
 }
