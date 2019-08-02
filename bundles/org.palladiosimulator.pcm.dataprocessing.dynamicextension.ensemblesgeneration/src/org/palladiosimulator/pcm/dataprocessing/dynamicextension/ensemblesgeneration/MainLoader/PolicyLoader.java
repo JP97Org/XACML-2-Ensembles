@@ -13,14 +13,14 @@ import oasis.names.tc.xacml._3_0.core.schema.wd_17.PolicySetType;
  * @version 1.0
  */
 public class PolicyLoader {
-	private String pathPolicy;
+    private String pathPolicy;
 
-	public PolicyLoader(final String pathPolicy) {
-		this.pathPolicy = pathPolicy;
-	}
-	
-	public PolicySetType loadPolicySet() {
-		return (PolicySetType) (new XACMLPolicyScanner(Path.of(this.pathPolicy), null).scan());
-	}
+    public PolicyLoader(final String pathPolicy) {
+        this.pathPolicy = pathPolicy;
+    }
+
+    public PolicySetType loadPolicySet() {
+        return (PolicySetType) (new XACMLPolicyScanner(Path.of(this.pathPolicy), null).scan());
+    }
 
 }
