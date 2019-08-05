@@ -10,6 +10,12 @@ import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgenera
 
 import oasis.names.tc.xacml._3_0.core.schema.wd_17.PolicyType;
 
+/**
+ * Represents the code part which represents a XACML policy, i.e. an ensemble in the ensemble system.
+ * 
+ * @author Jonathan Schenkenberger
+ * @version 1.0
+ */
 public class PolicyCodePart implements CodePart {
     private static final String POLICY_PREFIX = "policy:";
 
@@ -19,6 +25,11 @@ public class PolicyCodePart implements CodePart {
 
     private final String actionName;
 
+    /**
+     * Creates a new policy code part for the given policy.
+     * 
+     * @param policy - the given policy
+     */
     public PolicyCodePart(final PolicyType policy) {
         this.policy = policy;
         this.actionName = this.policy.getPolicyId().replaceFirst(POLICY_PREFIX, "");
@@ -73,6 +84,11 @@ public class PolicyCodePart implements CodePart {
         return expression;
     }
 
+    /**
+     * Gets the action name.
+     * 
+     * @return the action name
+     */
     public String getActionName() {
         return this.actionName;
     }

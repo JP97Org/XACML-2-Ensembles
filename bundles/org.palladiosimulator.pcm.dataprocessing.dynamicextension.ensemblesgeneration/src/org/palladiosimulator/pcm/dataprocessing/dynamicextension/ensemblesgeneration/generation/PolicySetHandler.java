@@ -8,6 +8,8 @@ import java.util.Set;
 
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ScalaClass;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ValueDeclaration;
+import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.Call;
+import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.MethodSignature;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ScalaBlock;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ValueInitialisation;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.xacml.Attribute;
@@ -20,11 +22,22 @@ import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgenera
 import oasis.names.tc.xacml._3_0.core.schema.wd_17.PolicySetType;
 import oasis.names.tc.xacml._3_0.core.schema.wd_17.PolicyType;
 
+/**
+ * Represents the code part which represents the XACML policy set, i.e. the whole ensemble system.
+ * 
+ * @author Jonathan Schenkenberger
+ * @version 1.0
+ */
 public class PolicySetHandler implements CodePart {
     private static final String MODEL_CLASS_NAME = "RunningExample";
 
     private final PolicySetType policySet;
 
+    /**
+     * Creates a new policy set code part for the given policy set.
+     * 
+     * @param policySet - the given policy set
+     */
     public PolicySetHandler(final PolicySetType policySet) {
         this.policySet = policySet;
     }
@@ -73,7 +86,8 @@ public class PolicySetHandler implements CodePart {
         // rules
         rootEnsemble.appendBlockCode(rules(rulesNames));
         code.appendBlockCode(rootEnsemble);
-        code.appendBlockCode(new ValueInitialisation("rootEnsemble", "root(new " + "System" + ")"));
+        final String expression = new Call("root", "new " + "System").getCodeDefinition().toString();
+        code.appendBlockCode(new ValueInitialisation("rootEnsemble", expression));
 
         // helper-method(s) and main
         code.setNext(getMain());
@@ -98,8 +112,8 @@ public class PolicySetHandler implements CodePart {
     private StringBuilder rules(final List<String> rulesNames) {
         final StringBuilder ret = new StringBuilder();
         for (final String ruleName : rulesNames) {
-            // TODO scala call
-            final ValueInitialisation ruleValue = new ValueInitialisation(ruleName + "Rule", "rules(" + ruleName + ")");
+            final String expression = new Call("rules", ruleName).getCodeDefinition().toString();
+            final ValueInitialisation ruleValue = new ValueInitialisation(ruleName + "Rule", expression);
             ret.append(ruleValue.getCodeDefinition());
         }
         return ret.append("\n");
@@ -115,7 +129,9 @@ public class PolicySetHandler implements CodePart {
         ret.appendBlockCode(new StringBuilder("\n"));
 
         final ScalaBlock main = new ScalaBlock();
-        main.appendPreBlockCode(new StringBuilder("def main(args: Array[String]): Unit ="));
+        final var signature = new MethodSignature("main", 
+                Arrays.asList(new ValueDeclaration("args", "Array[String]")), "Unit");
+        main.appendPreBlockCode(signature);
 
         // TODO (evtl. noch automatisiert generieren)
         main.appendBlockCode(new StringBuilder(
@@ -134,19 +150,14 @@ public class PolicySetHandler implements CodePart {
     }
 
     private ScalaBlock convert() {
-        // TODO scala method
         final ScalaBlock ret = new ScalaBlock();
-        ret.appendPreBlockCode(
-                new StringBuilder("def convertToCol(iterable: Iterable[Component]) : Collection[Component] ="));
+        final var signature = new MethodSignature("convertToCol",
+                Arrays.asList(new ValueDeclaration("iterable", "Iterable[Component]")), "Collection[Component]");
+        ret.appendPreBlockCode(signature);
 
-        ret.appendBlockCode(new StringBuilder("val collection = new ArrayList[Component]\n" 
-                + "\n"
-                + "val iter = iterable.iterator\n" 
-                + "while (iter.hasNext) {\n" 
-                + "collection.add(iter.next)\n" 
-                + "}\n"
-                + "\n"
-                + "return collection"));
+        ret.appendBlockCode(new StringBuilder("val collection = new ArrayList[Component]\n" + "\n"
+                + "val iter = iterable.iterator\n" + "while (iter.hasNext) {\n" + "collection.add(iter.next)\n" + "}\n"
+                + "\n" + "return collection"));
 
         return ret;
     }

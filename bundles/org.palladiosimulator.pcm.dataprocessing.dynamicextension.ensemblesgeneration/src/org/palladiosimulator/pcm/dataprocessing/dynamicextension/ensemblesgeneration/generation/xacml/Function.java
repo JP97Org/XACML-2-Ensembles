@@ -74,15 +74,33 @@ public enum Function {
     private final String matchId;
     private final String scalaType;
 
+    /**
+     * Constructor for the Function enum values.
+     * 
+     * @param matchId
+     *          - the XACML match id
+     * @param scalaType
+     *          - the datatype in scala
+     */
     private Function(final String matchId, final String scalaType) {
         this.matchId = matchId;
         this.scalaType = scalaType;
     }
 
+    /**
+     * Gets the match id.
+     * 
+     * @return the match id
+     */
     public String getMatchId() {
         return this.matchId;
     }
 
+    /**
+     * Gets the name of the datatype in scala.
+     * 
+     * @return the name of the datatype
+     */
     protected String getScalaType() {
         return this.scalaType;
     }
@@ -114,16 +132,45 @@ public enum Function {
         return null;
     }
 
+    /**
+     * Creates a {@code StringBuilder} which defines a check of the scala attribute against null (!=null).
+     * 
+     * @param scalaAttributeName 
+     *          - the name of the scala attribute
+     * @return the {@code StringBuilder} which defines a check of the scala attribute against null (!=null).
+     */
     private static StringBuilder nullCheck(final String scalaAttributeName) {
         return new StringBuilder(AttributeExtractor.VAR_NAME).append(".").append(scalaAttributeName)
                 .append(" != null && ");
     }
 
+    /**
+     * Creates a {@code StringBuilder} which defines a comparison.
+     * 
+     * @param scalaAttributeName
+     *          - the name of the scala attribute
+     * @param comparison
+     *          - the comparison sting (" > ", " < ", " >= ", " <= ")
+     * @param value
+     *          - the value to which the scala attribute should be compared to
+     * @return the {@code StringBuilder} which defines a comparison
+     */
     private static StringBuilder compare(final String scalaAttributeName, final String comparison, final String value) {
         return ScalaHelper.parenthesize(new StringBuilder(AttributeExtractor.VAR_NAME).append(".")
                 .append(scalaAttributeName).append(comparison).append(value));
     }
 
+    /**
+     * Creates a {@code StringBuilder} which defines a time comparison.
+     * 
+     * @param scalaAttributeName
+     *          - the name of the scala attribute
+     * @param comparison
+     *          - the comparison sting (" isAfter ", " isBefore ")
+     * @param value
+     *          - the value to which the scala attribute should be compared to
+     * @return the {@code StringBuilder} which defines a time comparison
+     */
     private static StringBuilder compareTime(String scalaAttributeName, String comparison, String value) {
         final StringBuilder parsedValue = ScalaHelper.parenthesize(
                 new StringBuilder("LocalTime.parse(\"").append(value).append("\", DateTimeFormatter.ISO_OFFSET_TIME)"));

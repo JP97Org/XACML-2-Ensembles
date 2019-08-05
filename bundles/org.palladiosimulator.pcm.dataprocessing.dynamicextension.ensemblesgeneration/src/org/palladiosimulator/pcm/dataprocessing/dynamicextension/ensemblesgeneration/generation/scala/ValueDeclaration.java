@@ -47,6 +47,15 @@ public class ValueDeclaration implements ScalaCode {
         this.isOptional = isOptional;
     }
 
+    /**
+     * Gets the name.
+     * 
+     * @return the name
+     */
+    public String getName() {
+        return this.name;
+    }
+    
     @Override
     public StringBuilder getCodeDefinition() {
         return new StringBuilder(ScalaHelper.KEYWORD_VAL)

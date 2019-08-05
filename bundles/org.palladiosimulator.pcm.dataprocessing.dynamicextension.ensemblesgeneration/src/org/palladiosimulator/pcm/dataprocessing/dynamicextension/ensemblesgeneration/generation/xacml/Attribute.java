@@ -103,7 +103,7 @@ public enum Attribute {
     }
 
     /**
-     * Gets the check code for the given value.
+     * Gets the check code for the given value defined by the match function of this attribute.
      * 
      * @param value 
      *          - the given value
@@ -156,7 +156,7 @@ public enum Attribute {
      * Gets the attribute defined by the attribute id and the match function.
      * 
      * @param attributeId 
-     *          - the attribute ide
+     *          - the attribute id
      * @param function 
      *          - the match function
      * @return the attribute defined by the attribute id and the match function or null if none found

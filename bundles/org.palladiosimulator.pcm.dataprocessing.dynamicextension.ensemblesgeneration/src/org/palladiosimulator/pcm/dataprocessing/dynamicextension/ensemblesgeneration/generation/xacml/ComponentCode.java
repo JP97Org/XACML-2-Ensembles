@@ -4,19 +4,31 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.Call;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ScalaBlock;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ScalaClass;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ScalaCode;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ValueDeclaration;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.util.ScalaHelper;
 
+/**
+ * Represents the subject and resource component class code.
+ * 
+ * @author Jonathan Schenkenberger
+ * @verison 1.0
+ */
 public class ComponentCode implements ScalaCode {
     public static final String SUBJECT_CLASS_NAME = "Subject";
     public static final String RESOURCE_CLASS_NAME = "Resource";
-    public static final String ENVIRONMENT_CLASS_NAME = "Environment";
 
     private final Set<Attribute> existingAttributes;
 
+    /**
+     * Creates a new component code with the given existing attributes in a set.
+     * 
+     * @param existingAttributes
+     *          - the given existing attributes in a set
+     */
     public ComponentCode(final Set<Attribute> existingAttributes) {
         this.existingAttributes = existingAttributes;
     }
@@ -28,14 +40,37 @@ public class ComponentCode implements ScalaCode {
         return ret;
     }
 
+    /**
+     * Gets the subject component code.
+     * 
+     * @return the subject component code
+     */
     private StringBuilder getSubjectComponentCode() {
         return getComponentCode(SUBJECT_CLASS_NAME, "subjectName", false, Category.SUBJECT);
     }
 
+    /**
+     * Gets the resource component code.
+     * 
+     * @return the resource component code
+     */
     private StringBuilder getResourceComponentCode() {
         return getComponentCode(RESOURCE_CLASS_NAME, "resourceName", false, Category.RESOURCE);
     }
 
+    /**
+     * Gets the component code with the given settings.
+     * 
+     * @param className
+     *          - the class name
+     * @param categoryScalaName
+     *          - the name of the 'name' attribute of the category
+     * @param isOptional
+     *          - whether the 'name' is optional, i.e. has standard value 'null'
+     * @param category
+     *          - the category
+     * @return the component code
+     */
     private StringBuilder getComponentCode(final String className, final String categoryScalaName,
             final boolean isOptional, final Category category) {
         final var componentClass = new ScalaClass(false, className, ScalaHelper.KEYWORD_COMPONENT);
@@ -59,9 +94,8 @@ public class ComponentCode implements ScalaCode {
 
         final ScalaBlock classBlock = new ScalaBlock();
         classBlock.appendPreBlockCode(componentClass);
-        // TODO scala: aufruf
         // name setting
-        classBlock.appendBlockCode(new StringBuilder("name(s\"" + className + " $" + categoryScalaName + "\")"));
+        classBlock.appendBlockCode(new Call("name", "s\"" + className + " $" + categoryScalaName + "\""));
 
         return classBlock.getCodeDefinition().append("\n");
     }
