@@ -30,13 +30,22 @@ import oasis.names.tc.xacml._3_0.core.schema.wd_17.PolicyType;
  */
 public class PolicySetHandler implements CodePart {
     private static final String MODEL_CLASS_NAME = "RunningExample";
+    private static final ValueDeclaration NOW = new ValueDeclaration(ScalaHelper.KEYWORD_NOW, ScalaHelper.KEYWORD_TIME);
+    private static final String PACKAGE = "package scenarios";
+    private static final StringBuilder IMPORTS = new StringBuilder("import tcof.{Component, _}\n")
+            .append("import java.time._\n").append("import java.time.format._\n")
+            .append("import java.util.Collection\n").append("import java.util.ArrayList\n");
+    private static final String SYSTEM = "System";
+    private static final String ROOT_ENSEMBLE_NAME = "rootEnsemble";
+    private static final String RULE_SUFFIX = "Rule";
 
     private final PolicySetType policySet;
 
     /**
      * Creates a new policy set code part for the given policy set.
      * 
-     * @param policySet - the given policy set
+     * @param policySet
+     *            - the given policy set
      */
     public PolicySetHandler(final PolicySetType policySet) {
         this.policySet = policySet;
@@ -44,17 +53,13 @@ public class PolicySetHandler implements CodePart {
 
     @Override
     public ScalaBlock getCode() {
-        // TODO constants
-
         final ScalaBlock code = new ScalaBlock();
 
         final ScalaClass modelClass = new ScalaClass(false, MODEL_CLASS_NAME, ScalaHelper.KEYWORD_MODEL);
-        modelClass.addAllAttributes(Arrays.asList(new ValueDeclaration("now", "LocalTime")));
+        modelClass.addAllAttributes(Arrays.asList(NOW));
 
         // package, imports and model class definition
-        var preBlockCode = new StringBuilder("package scenarios\n").append("import tcof.{Component, _}\n")
-                .append("import java.time._\n").append("import java.time.format._\n")
-                .append("import java.util.Collection\n").append("import java.util.ArrayList\n").append("\n")
+        var preBlockCode = new StringBuilder(PACKAGE).append("\n").append(IMPORTS).append("\n")
                 .append(modelClass.getCodeDefinition());
         code.appendPreBlockCode(preBlockCode);
 
@@ -70,7 +75,7 @@ public class PolicySetHandler implements CodePart {
 
         // root ensemble
         final ScalaBlock rootEnsemble = new ScalaBlock();
-        final ScalaClass systemClass = new ScalaClass(false, "System", ScalaHelper.KEYWORD_ENSEMBLE_ROOT);
+        final ScalaClass systemClass = new ScalaClass(false, SYSTEM, ScalaHelper.KEYWORD_ENSEMBLE_ROOT);
 
         rootEnsemble.appendPreBlockCode(systemClass);
 
@@ -86,8 +91,8 @@ public class PolicySetHandler implements CodePart {
         // rules
         rootEnsemble.appendBlockCode(rules(rulesNames));
         code.appendBlockCode(rootEnsemble);
-        final String expression = new Call("root", "new " + "System").getCodeDefinition().toString();
-        code.appendBlockCode(new ValueInitialisation("rootEnsemble", expression));
+        final String expression = new Call("root", "new " + SYSTEM).getCodeDefinition().toString();
+        code.appendBlockCode(new ValueInitialisation(ROOT_ENSEMBLE_NAME, expression));
 
         // helper-method(s) and main
         code.setNext(getMain());
@@ -113,7 +118,7 @@ public class PolicySetHandler implements CodePart {
         final StringBuilder ret = new StringBuilder();
         for (final String ruleName : rulesNames) {
             final String expression = new Call("rules", ruleName).getCodeDefinition().toString();
-            final ValueInitialisation ruleValue = new ValueInitialisation(ruleName + "Rule", expression);
+            final ValueInitialisation ruleValue = new ValueInitialisation(ruleName + RULE_SUFFIX, expression);
             ret.append(ruleValue.getCodeDefinition());
         }
         return ret.append("\n");
@@ -129,21 +134,20 @@ public class PolicySetHandler implements CodePart {
         ret.appendBlockCode(new StringBuilder("\n"));
 
         final ScalaBlock main = new ScalaBlock();
-        final var signature = new MethodSignature("main", 
-                Arrays.asList(new ValueDeclaration("args", "Array[String]")), "Unit");
+        final var signature = new MethodSignature("main", Arrays.asList(new ValueDeclaration("args", "Array[String]")),
+                "Unit");
         main.appendPreBlockCode(signature);
 
-        // TODO (evtl. noch automatisiert generieren)
-        main.appendBlockCode(new StringBuilder(
-                "val scenario = new RunningExample(LocalTime.parse(\"13:00:00Z\", DateTimeFormatter.ISO_OFFSET_TIME))\n"
-                        + "val subjectA = new scenario.Subject(\"A\", \"Production_Hall_Section_1\", \"ASub\", \"Worker\", \"Shift 1\")\n"
-                        + "val subjectB = new scenario.Subject(\"B\", \"Shift 2\")\n"
-                        + "val resourceA = new scenario.Resource(\"machine\", \"INCIDENT_HAPPENED\", \"PUBLIC\", 5, 4)\n"
-                        + "scenario.components = List(subjectA, subjectB, resourceA)\n"
-                        + "scenario.rootEnsemble.init()\n" + "scenario.rootEnsemble.solve()\n"
-                        + "val testActionAllow = scenario.rootEnsemble.instance.testActionRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && !convertToCol(x.allowedSubjects).contains(subjectB))\n"
-                        + "if(testActionAllow) {\n" + "println(\"allow\")\n" + "} else {\n" + "println(\"deny\")\n"
-                        + "}"));
+        // TODO maybe generate partly automatic
+        main.appendBlockCode(new StringBuilder("//TODO: adapt to your usecase scenario\n"
+                + "val scenario = new RunningExample(LocalTime.parse(\"13:00:00Z\", DateTimeFormatter.ISO_OFFSET_TIME))\n"
+                + "val subjectA = new scenario.Subject(\"A\", \"Production_Hall_Section_1\", \"ASub\", \"Worker\", \"Shift 1\")\n"
+                + "val subjectB = new scenario.Subject(\"B\", \"Shift 2\")\n"
+                + "val resourceA = new scenario.Resource(\"machine\", \"INCIDENT_HAPPENED\", \"PUBLIC\", 5, 4)\n"
+                + "scenario.components = List(subjectA, subjectB, resourceA)\n" + "scenario.rootEnsemble.init()\n"
+                + "scenario.rootEnsemble.solve()\n"
+                + "val testActionAllow = scenario.rootEnsemble.instance.testActionRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && !convertToCol(x.allowedSubjects).contains(subjectB))\n"
+                + "if(testActionAllow) {\n" + "println(\"allow\")\n" + "} else {\n" + "println(\"deny\")\n" + "}"));
 
         ret.appendBlockCode(main);
         return ret;

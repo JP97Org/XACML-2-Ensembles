@@ -4,6 +4,8 @@ import java.util.Comparator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.util.ScalaHelper;
+
 import com.att.research.xacml.api.XACML3;
 
 /**
@@ -24,13 +26,15 @@ public enum Attribute {
     GREATER_INT(Category.RESOURCE, "context:comparison:int", "valueInt", Function.GREATER_INT),
     LESS_DOUBLE(Category.RESOURCE, "context:comparison:double", "valueDouble", Function.LESS_DOUBLE), 
     GREATER_DOUBLE(Category.RESOURCE, "context:comparison:double", "valueDouble", Function.GREATER_DOUBLE),
-    LESS_TIME(Category.ENVIRONMENT, XACML3.ID_ENVIRONMENT_CURRENT_TIME.stringValue(), "now", Function.LESS_TIME), 
-    GREATER_TIME(Category.ENVIRONMENT, XACML3.ID_ENVIRONMENT_CURRENT_TIME.stringValue(), "now", Function.GREATER_TIME);
+    LESS_TIME(Category.ENVIRONMENT, XACML3.ID_ENVIRONMENT_CURRENT_TIME.stringValue(), 
+            ScalaHelper.KEYWORD_NOW, Function.LESS_TIME), 
+    GREATER_TIME(Category.ENVIRONMENT, XACML3.ID_ENVIRONMENT_CURRENT_TIME.stringValue(), 
+            ScalaHelper.KEYWORD_NOW, Function.GREATER_TIME);
 
-    protected static final String TYPE_STRING = "String";
-    protected static final String TYPE_INT = "Int";
-    protected static final String TYPE_DOUBLE = "Double";
-    protected static final String TYPE_TIME = "LocalTime";
+    protected static final String TYPE_STRING = ScalaHelper.KEYWORD_STRING;
+    protected static final String TYPE_INT = ScalaHelper.KEYWORD_INT;
+    protected static final String TYPE_DOUBLE = ScalaHelper.KEYWORD_DOUBLE;
+    protected static final String TYPE_TIME = ScalaHelper.KEYWORD_TIME;
 
     private final Category attributeCategory;
     private final String attributeId;

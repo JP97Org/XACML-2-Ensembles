@@ -21,7 +21,7 @@ public class ValueInitialisation implements ScalaCode {
      *            - the expression which is assigned
      */
     public ValueInitialisation(final String name, final String expression) {
-        this.name = name;
+        this.name = ScalaHelper.createIdentifier(name);
         this.expression = expression;
     }
 

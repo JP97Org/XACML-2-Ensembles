@@ -2,6 +2,8 @@ package org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgener
 
 import java.util.List;
 
+import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.util.ScalaHelper;
+
 /**
  * Represents a scala method signature.
  * 
@@ -23,11 +25,12 @@ public class MethodSignature implements ScalaCode {
      *            - the return type of the method
      */
     public MethodSignature(final String name, final List<ValueDeclaration> arguments, final String type) {
-        this.methodSignature = new StringBuilder("def ").append(name).append("(");
-        if (!arguments.isEmpty()) {
+        this.methodSignature = new StringBuilder(ScalaHelper.KEYWORD_DEF).append(" ")
+                .append(ScalaHelper.createIdentifier(name)).append("(");
+        if (arguments != null && !arguments.isEmpty()) {
             final StringBuilder builder = new StringBuilder();
             for (var val : arguments) {
-                builder.append(val.getCodeDefinition().toString().replaceFirst("val ", "")).append(", ");
+                builder.append(val.getCodeDefinition().toString().replaceFirst(ScalaHelper.KEYWORD_VAL + " ", "")).append(", ");
             }
             this.methodSignature.append(builder.substring(0, builder.length() - 2));
         }
@@ -36,6 +39,6 @@ public class MethodSignature implements ScalaCode {
 
     @Override
     public StringBuilder getCodeDefinition() {
-        return methodSignature;
+        return new StringBuilder(this.methodSignature);
     }
 }

@@ -25,7 +25,7 @@ public class ValueDeclaration implements ScalaCode {
      *            - the given type
      */
     public ValueDeclaration(final String name, final String type) {
-        this.name = name;
+        this.name = ScalaHelper.createIdentifier(name);
         this.type = type;
         this.isOptional = false;
     }
@@ -55,20 +55,16 @@ public class ValueDeclaration implements ScalaCode {
     public String getName() {
         return this.name;
     }
-    
+
     @Override
     public StringBuilder getCodeDefinition() {
-        return new StringBuilder(ScalaHelper.KEYWORD_VAL)
-                .append(" ")
-                .append(this.name)
-                .append(": ")
-                .append(this.type)
+        return new StringBuilder(ScalaHelper.KEYWORD_VAL).append(" ").append(this.name).append(": ").append(this.type)
                 .append(this.isOptional ? getStandardValue() : "");
     }
 
     private String getStandardValue() {
-        // TODO: constants
-        return this.type.equals("Int") || this.type.equals("Double") ? " = 0" : " = null";
+        return this.type.equals(ScalaHelper.KEYWORD_INT) || this.type.equals(ScalaHelper.KEYWORD_DOUBLE) 
+                ? " = 0" : " = null";
     }
 
     @Override

@@ -30,7 +30,7 @@ public class ScalaClass implements ScalaCode {
      */
     public ScalaClass(final boolean isSingleton, final String name, final String superClass) {
         this.isSingleton = isSingleton;
-        this.name = name;
+        this.name = ScalaHelper.createIdentifier(name);
         this.superClass = superClass;
         this.attributes = new ArrayList<>();
     }
