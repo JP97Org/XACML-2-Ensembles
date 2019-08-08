@@ -40,15 +40,19 @@ public class PolicySetHandler implements CodePart {
     private static final String RULE_SUFFIX = "Rule";
 
     private final PolicySetType policySet;
+    private final String mainCode;
 
     /**
      * Creates a new policy set code part for the given policy set.
      * 
      * @param policySet
      *            - the given policy set
+     * @param mainCode
+     *            - the code contained in the main method or null (if standard code)
      */
-    public PolicySetHandler(final PolicySetType policySet) {
+    public PolicySetHandler(final PolicySetType policySet, final String mainCode) {
         this.policySet = policySet;
+        this.mainCode = mainCode;
     }
 
     @Override
@@ -138,8 +142,7 @@ public class PolicySetHandler implements CodePart {
                 "Unit");
         main.appendPreBlockCode(signature);
 
-        // TODO maybe generate partly automatic
-        main.appendBlockCode(new StringBuilder("//TODO: adapt to your usecase scenario\n"
+        main.appendBlockCode(new StringBuilder(this.mainCode == null ? "//TODO: adapt to your usecase scenario\n"
                 + "val scenario = new RunningExample(LocalTime.parse(\"13:00:00Z\", DateTimeFormatter.ISO_OFFSET_TIME))\n"
                 + "val subjectA = new scenario.Subject(\"A\", \"Production_Hall_Section_1\", \"ASub\", \"Worker\", \"Shift 1\")\n"
                 + "val subjectB = new scenario.Subject(\"B\", \"Shift 2\")\n"
@@ -147,7 +150,7 @@ public class PolicySetHandler implements CodePart {
                 + "scenario.components = List(subjectA, subjectB, resourceA)\n" + "scenario.rootEnsemble.init()\n"
                 + "scenario.rootEnsemble.solve()\n"
                 + "val testActionAllow = scenario.rootEnsemble.instance.testActionRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && !convertToCol(x.allowedSubjects).contains(subjectB))\n"
-                + "if(testActionAllow) {\n" + "println(\"allow\")\n" + "} else {\n" + "println(\"deny\")\n" + "}"));
+                + "if(testActionAllow) {\n" + "println(\"allow\")\n" + "} else {\n" + "println(\"deny\")\n" + "}" : this.mainCode));
 
         ret.appendBlockCode(main);
         return ret;

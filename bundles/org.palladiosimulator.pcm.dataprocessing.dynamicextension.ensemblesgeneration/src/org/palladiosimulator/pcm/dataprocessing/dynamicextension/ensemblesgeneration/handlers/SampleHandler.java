@@ -49,7 +49,7 @@ public class SampleHandler extends AbstractHandler {
         LOGGER.info("loading " + policySet.getDescription());
 
         // generating code
-        final PolicySetHandler handler = new PolicySetHandler(policySet);
+        final PolicySetHandler handler = new PolicySetHandler(policySet, null);
         final String code = handler.getCode().toString();
 
         // writing code
