@@ -17,7 +17,7 @@ public class Test {
     private static final String DIR_POLICYSETS = "out/";
     private static final String DIR_SCALA_OUTPUT = "models/ensembleTester/src/main/scala/scenarios/"; 
 
-    private static final String FILENAME_POLICYSET = "UC3.xml"; // "UC-Combined.xml"; // "UC-Shift.xml"; // "UC-Shift.xml"; // "UC-Test.xml"; // 
+    private static final String FILENAME_POLICYSET = "UC-Test.xml"; // "UC3.xml"; // "UC-Combined.xml"; // "UC-Shift.xml"; // "UC-Shift.xml"; // 
     private static final String FILENAME_SCALA_OUTPUT = "out.scala";
     ////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -31,8 +31,8 @@ public class Test {
             + "val subjectB = new scenario.Subject(\"B\", \"Shift 2\")\n"
             + "val resourceA = new scenario.Resource(\"machine\", \"INCIDENT_HAPPENED\", \"PUBLIC\", 5, 4)\n"
             + "scenario.components = List(subjectA, subjectB, resourceA)\n" + "scenario.rootEnsemble.init()\n"
-            + "scenario.rootEnsemble.solve()\n"
-            + "val testActionAllow = scenario.rootEnsemble.instance.testActionRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && convertToCol(x.allowedResources).contains(resourceA) && !convertToCol(x.allowedSubjects).contains(subjectB))\n"
+            + "val solved = scenario.rootEnsemble.solve()\n"
+            + "val testActionAllow = solved && scenario.rootEnsemble.instance.testActionRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && convertToCol(x.allowedResources).contains(resourceA) && !convertToCol(x.allowedSubjects).contains(subjectB))\n"
             + "if(testActionAllow) {\n" + "println(\"allow\")\n" + "} else {\n" + "println(\"deny\")\n" + "}";
     
     private static final String CODE_TEST_DENY = "//TODO: adapt to your usecase scenario\n"
@@ -41,8 +41,8 @@ public class Test {
             + "val subjectB = new scenario.Subject(\"B\", \"Shift 2\")\n"
             + "val resourceA = new scenario.Resource(\"machine\", \"INCIDENT_HAPPENED\", \"PUBLIC\", 5, 4)\n"
             + "scenario.components = List(subjectA, subjectB, resourceA)\n" + "scenario.rootEnsemble.init()\n"
-            + "scenario.rootEnsemble.solve()\n"
-            + "val testActionAllow = scenario.rootEnsemble.instance.testActionRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && !convertToCol(x.allowedSubjects).contains(subjectB))\n"
+            + "val solved = scenario.rootEnsemble.solve()\n"
+            + "val testActionAllow = solved && scenario.rootEnsemble.instance.testActionRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && !convertToCol(x.allowedSubjects).contains(subjectB))\n"
             + "if(testActionAllow) {\n" + "println(\"allow\")\n" + "} else {\n" + "println(\"deny\")\n" + "}";
     
     private static final String CODE_SHIFT_ALLOW = "//TODO: adapt to your usecase scenario\n" + 
@@ -52,8 +52,8 @@ public class Test {
             "val resourceA = new scenario.Resource(\"data\");\n" + 
             "scenario.components = List(subjectA, subjectB, resourceA)\n" + 
             "scenario.rootEnsemble.init()\n" + 
-            "scenario.rootEnsemble.solve()\n" + 
-            "val testActionAllow = scenario.rootEnsemble.instance.showPlanRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && !convertToCol(x.allowedSubjects).contains(subjectB))\n" + 
+            "val solved = scenario.rootEnsemble.solve()\n" + 
+            "val testActionAllow = solved && scenario.rootEnsemble.instance.showPlanRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && !convertToCol(x.allowedSubjects).contains(subjectB))\n" + 
             "if(testActionAllow) {\n" + 
             "println(\"allow\")\n" + 
             "} else {\n" + 
@@ -67,8 +67,8 @@ public class Test {
             "val resourceA = new scenario.Resource(\"data\");\n" + 
             "scenario.components = List(subjectA, subjectB, resourceA)\n" + 
             "scenario.rootEnsemble.init()\n" + 
-            "scenario.rootEnsemble.solve()\n" + 
-            "val testActionAllow = scenario.rootEnsemble.instance.showPlanRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && !convertToCol(x.allowedSubjects).contains(subjectB))\n" + 
+            "val solved = scenario.rootEnsemble.solve()\n" + 
+            "val testActionAllow = solved && scenario.rootEnsemble.instance.showPlanRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && !convertToCol(x.allowedSubjects).contains(subjectB))\n" + 
             "if(testActionAllow) {\n" + 
             "println(\"allow\")\n" + 
             "} else {\n" + 
@@ -82,8 +82,8 @@ public class Test {
             "val resourceA = new scenario.Resource(\"machine\", \"INCIDENT_HAPPENED\");\n" + 
             "scenario.components = List(subjectA, subjectB, resourceA)\n" + 
             "scenario.rootEnsemble.init()\n" + 
-            "scenario.rootEnsemble.solve()\n" + 
-            "val testActionAllow = scenario.rootEnsemble.instance.checkPhysicalAccessRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && convertToCol(x.allowedResources).contains(resourceA)  && !convertToCol(x.allowedSubjects).contains(subjectB))\n" + 
+            "val solved = scenario.rootEnsemble.solve()\n" + 
+            "val testActionAllow = solved && scenario.rootEnsemble.instance.checkPhysicalAccessRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && convertToCol(x.allowedResources).contains(resourceA)  && !convertToCol(x.allowedSubjects).contains(subjectB))\n" + 
             "if(testActionAllow) {\n" + 
             "println(\"allow\")\n" + 
             "} else {\n" + 
@@ -97,8 +97,8 @@ public class Test {
             "val resourceA = new scenario.Resource(\"machine\", \"INCIDENT_HAPPENED\");\n" + 
             "scenario.components = List(subjectA, subjectB, resourceA)\n" + 
             "scenario.rootEnsemble.init()\n" + 
-            "scenario.rootEnsemble.solve()\n" + 
-            "val testActionAllow = scenario.rootEnsemble.instance.checkPhysicalAccessRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && convertToCol(x.allowedResources).contains(resourceA)  && !convertToCol(x.allowedSubjects).contains(subjectB))\n" + 
+            "val solved = scenario.rootEnsemble.solve()\n" + 
+            "val testActionAllow = solved && scenario.rootEnsemble.instance.checkPhysicalAccessRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && convertToCol(x.allowedResources).contains(resourceA)  && !convertToCol(x.allowedSubjects).contains(subjectB))\n" + 
             "if(testActionAllow) {\n" + 
             "println(\"allow\")\n" + 
             "} else {\n" + 
@@ -112,8 +112,8 @@ public class Test {
             "val resourceA = new scenario.Resource(\"machine\", \"INCIDENT_HAPPENED\");\n" + 
             "scenario.components = List(subjectA, subjectB, resourceA)\n" + 
             "scenario.rootEnsemble.init()\n" + 
-            "scenario.rootEnsemble.solve()\n" + 
-            "val testActionAllow = scenario.rootEnsemble.instance.sendRawDataP1Rule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && convertToCol(x.allowedSubjects).contains(subjectB))\n" + 
+            "val solved = scenario.rootEnsemble.solve()\n" + 
+            "val testActionAllow = solved && scenario.rootEnsemble.instance.sendRawDataP1Rule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && convertToCol(x.allowedSubjects).contains(subjectB))\n" + 
             "if(testActionAllow) {\n" + 
             "println(\"allow\")\n" + 
             "} else {\n" + 
@@ -127,8 +127,8 @@ public class Test {
             "val resourceA = new scenario.Resource(\"machine\", \"OK\");\n" + 
             "scenario.components = List(subjectA, subjectB, resourceA)\n" + 
             "scenario.rootEnsemble.init()\n" + 
-            "scenario.rootEnsemble.solve()\n" + 
-            "val testActionAllow = scenario.rootEnsemble.instance.aNameRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && convertToCol(x.allowedResources).contains(resourceA))\n" + 
+            "val solved = scenario.rootEnsemble.solve()\n" + 
+            "val testActionAllow = solved && scenario.rootEnsemble.instance.aNameRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && convertToCol(x.allowedResources).contains(resourceA))\n" + 
             "if(testActionAllow) {\n" + 
             "println(\"allow\")\n" + 
             "} else {\n" + 
@@ -139,7 +139,7 @@ public class Test {
     
 	public static void main(String[] args) {
 	    //TODO: adapt to test case, run once, refresh ScalaEnsembleTester, run again and check if result is as expected
-	    final String codeMain = CODE_3_DENY; 
+	    final String codeMain = CODE_TEST_ALLOW; 
 	    
 	    final PolicyLoader loader = new PolicyLoader(PATH_POLICYSET);
 	    final PolicySetHandler handler = new PolicySetHandler(loader.loadPolicySet(), codeMain);

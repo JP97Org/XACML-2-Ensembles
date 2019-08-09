@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ScalaClass;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ValueDeclaration;
@@ -16,6 +18,7 @@ import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgenera
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.xacml.AttributeExtractor;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.xacml.Category;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.xacml.ComponentCode;
+import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.xacml.ObligationStructure;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.handlers.SampleHandler;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.util.ScalaHelper;
 
@@ -69,10 +72,13 @@ public class PolicySetHandler implements CodePart {
 
         // components
         final Set<Attribute> existingAttributes = new HashSet<>();
+        final SortedSet<ObligationStructure> obligations = new TreeSet<>();
         final List<PolicyType> policies = getPolicies();
         for (final PolicyType policy : policies) {
             for (final Category category : Category.values()) {
-                existingAttributes.addAll(new AttributeExtractor(policy, category).extractExisitingAttributes());
+                final var extractor = new AttributeExtractor(policy, category);
+                existingAttributes.addAll(extractor.extractExisitingAttributes());
+                obligations.addAll(extractor.extractExisitingObligations());
             }
         }
         code.appendBlockCode(new ComponentCode(existingAttributes));
@@ -92,12 +98,15 @@ public class PolicySetHandler implements CodePart {
             rootEnsemble.appendBlockCode(new StringBuilder("\n"));
         }
 
-        // rules
+        // rules and root ensemble
         rootEnsemble.appendBlockCode(rules(rulesNames));
         code.appendBlockCode(rootEnsemble);
         final String expression = new Call("root", "new " + SYSTEM).getCodeDefinition().toString();
         code.appendBlockCode(new ValueInitialisation(ROOT_ENSEMBLE_NAME, expression));
 
+        // obligations methods
+        code.appendBlockCode(obligations(obligations));
+        
         // helper-method(s) and main
         code.setNext(getMain());
 
@@ -127,6 +136,17 @@ public class PolicySetHandler implements CodePart {
         }
         return ret.append("\n");
     }
+    
+    private StringBuilder obligations(final SortedSet<ObligationStructure> obligations) {
+        final StringBuilder ret = new StringBuilder("\n");
+        
+        for (var obligation : obligations) {
+            ret.append(obligation.getMethodBlock().getCodeDefinition());
+            ret.append("\n");
+        }
+        
+        return ret;
+    }
 
     private ScalaBlock getMain() {
         final ScalaBlock ret = new ScalaBlock();
@@ -148,8 +168,8 @@ public class PolicySetHandler implements CodePart {
                 + "val subjectB = new scenario.Subject(\"B\", \"Shift 2\")\n"
                 + "val resourceA = new scenario.Resource(\"machine\", \"INCIDENT_HAPPENED\", \"PUBLIC\", 5, 4)\n"
                 + "scenario.components = List(subjectA, subjectB, resourceA)\n" + "scenario.rootEnsemble.init()\n"
-                + "scenario.rootEnsemble.solve()\n"
-                + "val testActionAllow = scenario.rootEnsemble.instance.testActionRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && !convertToCol(x.allowedSubjects).contains(subjectB))\n"
+                + "val solved = scenario.rootEnsemble.solve()\n"
+                + "val testActionAllow = solved && scenario.rootEnsemble.instance.testActionRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && !convertToCol(x.allowedSubjects).contains(subjectB))\n"
                 + "if(testActionAllow) {\n" + "println(\"allow\")\n" + "} else {\n" + "println(\"deny\")\n" + "}" : this.mainCode));
 
         ret.appendBlockCode(main);

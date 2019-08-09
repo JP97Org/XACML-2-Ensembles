@@ -48,6 +48,22 @@ public class AttributeExtractor {
 
         return attributes;
     }
+    
+    /**
+     * Extracts the existing obligations set, i.e. all existing obligations in the rules of this policies.
+     * 
+     * @return the existing obligations set, i.e. all existing obligations in the rules of this policies
+     */
+    public Set<ObligationStructure> extractExisitingObligations() {
+        final Set<ObligationStructure> obligations = new HashSet<>();
+
+        final List<RuleType> rules = getRules();
+        for (final RuleType rule : rules) {
+            obligations.addAll(new RuleAttributeExtractor(rule, this.category).getExisitingObligations());
+        }
+
+        return obligations;
+    }
 
     /**
      * Extracts the check code for the whole policy and the defined category.

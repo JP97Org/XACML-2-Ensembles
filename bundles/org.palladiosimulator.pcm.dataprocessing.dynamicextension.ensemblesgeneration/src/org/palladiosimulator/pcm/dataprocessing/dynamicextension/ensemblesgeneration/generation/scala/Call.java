@@ -46,7 +46,16 @@ public class Call implements ScalaCode {
             this.callContent = "";
         }
     }
-
+    
+    /**
+     * Gets the name of the called method.
+     * 
+     * @return the name of the called method
+     */
+    public String getName() {
+        return this.name;
+    }
+    
     @Override
     public StringBuilder getCodeDefinition() {
         return new StringBuilder(this.name).append("(").append(this.callContent).append(")");

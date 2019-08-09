@@ -17,6 +17,7 @@ public final class ScalaHelper {
     public final static String KEYWORD_STRING = "String";
     public final static String KEYWORD_INT = "Int";
     public final static String KEYWORD_DOUBLE = "Double";
+    public final static String KEYWORD_BOOLEAN = "Boolean";
     public final static String KEYWORD_TIME = "LocalTime";
     public final static String KEYWORD_COMPONENT = "Component";
     public final static String KEYWORD_ENSEMBLE = "Ensemble";
