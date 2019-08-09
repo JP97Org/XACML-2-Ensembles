@@ -17,7 +17,7 @@ public class Test {
     private static final String DIR_POLICYSETS = "out/";
     private static final String DIR_SCALA_OUTPUT = "models/ensembleTester/src/main/scala/scenarios/"; 
 
-    private static final String FILENAME_POLICYSET = "UC-Test.xml"; // "UC-Shift.xml"; //
+    private static final String FILENAME_POLICYSET = "UC3.xml"; // "UC-Combined.xml"; // "UC-Shift.xml"; // "UC-Shift.xml"; // "UC-Test.xml"; // 
     private static final String FILENAME_SCALA_OUTPUT = "out.scala";
     ////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -32,7 +32,7 @@ public class Test {
             + "val resourceA = new scenario.Resource(\"machine\", \"INCIDENT_HAPPENED\", \"PUBLIC\", 5, 4)\n"
             + "scenario.components = List(subjectA, subjectB, resourceA)\n" + "scenario.rootEnsemble.init()\n"
             + "scenario.rootEnsemble.solve()\n"
-            + "val testActionAllow = scenario.rootEnsemble.instance.testActionRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && !convertToCol(x.allowedSubjects).contains(subjectB))\n"
+            + "val testActionAllow = scenario.rootEnsemble.instance.testActionRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && convertToCol(x.allowedResources).contains(resourceA) && !convertToCol(x.allowedSubjects).contains(subjectB))\n"
             + "if(testActionAllow) {\n" + "println(\"allow\")\n" + "} else {\n" + "println(\"deny\")\n" + "}";
     
     private static final String CODE_TEST_DENY = "//TODO: adapt to your usecase scenario\n"
@@ -45,11 +45,101 @@ public class Test {
             + "val testActionAllow = scenario.rootEnsemble.instance.testActionRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && !convertToCol(x.allowedSubjects).contains(subjectB))\n"
             + "if(testActionAllow) {\n" + "println(\"allow\")\n" + "} else {\n" + "println(\"deny\")\n" + "}";
     
+    private static final String CODE_SHIFT_ALLOW = "//TODO: adapt to your usecase scenario\n" + 
+            "val scenario = new RunningExample(LocalTime.parse(\"13:00:00Z\", DateTimeFormatter.ISO_OFFSET_TIME))\n" + 
+            "val subjectA = new scenario.Subject(\"A\", \"Production_Hall\", \"A\", \"Worker\", \"Early-Production\")\n" + 
+            "val subjectB = new scenario.Subject(\"B\")\n" + 
+            "val resourceA = new scenario.Resource(\"data\");\n" + 
+            "scenario.components = List(subjectA, subjectB, resourceA)\n" + 
+            "scenario.rootEnsemble.init()\n" + 
+            "scenario.rootEnsemble.solve()\n" + 
+            "val testActionAllow = scenario.rootEnsemble.instance.showPlanRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && !convertToCol(x.allowedSubjects).contains(subjectB))\n" + 
+            "if(testActionAllow) {\n" + 
+            "println(\"allow\")\n" + 
+            "} else {\n" + 
+            "println(\"deny\")\n" + 
+            "}";
+    
+    private static final String CODE_SHIFT_DENY = "//TODO: adapt to your usecase scenario\n" + 
+            "val scenario = new RunningExample(LocalTime.parse(\"15:00:00Z\", DateTimeFormatter.ISO_OFFSET_TIME))\n" + 
+            "val subjectA = new scenario.Subject(\"A\", \"Production_Hall\", \"A\", \"Worker\", \"Early-Production\")\n" + 
+            "val subjectB = new scenario.Subject(\"B\")\n" + 
+            "val resourceA = new scenario.Resource(\"data\");\n" + 
+            "scenario.components = List(subjectA, subjectB, resourceA)\n" + 
+            "scenario.rootEnsemble.init()\n" + 
+            "scenario.rootEnsemble.solve()\n" + 
+            "val testActionAllow = scenario.rootEnsemble.instance.showPlanRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && !convertToCol(x.allowedSubjects).contains(subjectB))\n" + 
+            "if(testActionAllow) {\n" + 
+            "println(\"allow\")\n" + 
+            "} else {\n" + 
+            "println(\"deny\")\n" + 
+            "}";
+    
+    private static final String CODE_COMBINED_ALLOW = "//TODO: adapt to your usecase scenario\n" + 
+            "val scenario = new RunningExample(LocalTime.parse(\"13:00:00Z\", DateTimeFormatter.ISO_OFFSET_TIME))\n" + 
+            "val subjectA = new scenario.Subject(\"A\", \"Production B\", \"A\", \"QAInspector\")\n" + 
+            "val subjectB = new scenario.Subject(\"B\")\n" + 
+            "val resourceA = new scenario.Resource(\"machine\", \"INCIDENT_HAPPENED\");\n" + 
+            "scenario.components = List(subjectA, subjectB, resourceA)\n" + 
+            "scenario.rootEnsemble.init()\n" + 
+            "scenario.rootEnsemble.solve()\n" + 
+            "val testActionAllow = scenario.rootEnsemble.instance.checkPhysicalAccessRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && convertToCol(x.allowedResources).contains(resourceA)  && !convertToCol(x.allowedSubjects).contains(subjectB))\n" + 
+            "if(testActionAllow) {\n" + 
+            "println(\"allow\")\n" + 
+            "} else {\n" + 
+            "println(\"deny\")\n" + 
+            "}";
+    
+    private static final String CODE_COMBINED_DENY = "//TODO: adapt to your usecase scenario\n" + 
+            "val scenario = new RunningExample(LocalTime.parse(\"13:00:00Z\", DateTimeFormatter.ISO_OFFSET_TIME))\n" + 
+            "val subjectA = new scenario.Subject(\"A\", \"Production B\", \"B\", \"QAInspector\")\n" + 
+            "val subjectB = new scenario.Subject(\"B\")\n" + 
+            "val resourceA = new scenario.Resource(\"machine\", \"INCIDENT_HAPPENED\");\n" + 
+            "scenario.components = List(subjectA, subjectB, resourceA)\n" + 
+            "scenario.rootEnsemble.init()\n" + 
+            "scenario.rootEnsemble.solve()\n" + 
+            "val testActionAllow = scenario.rootEnsemble.instance.checkPhysicalAccessRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && convertToCol(x.allowedResources).contains(resourceA)  && !convertToCol(x.allowedSubjects).contains(subjectB))\n" + 
+            "if(testActionAllow) {\n" + 
+            "println(\"allow\")\n" + 
+            "} else {\n" + 
+            "println(\"deny\")\n" + 
+            "}";
+    
+    private static final String CODE_3_ALLOW = "//TODO: adapt to your usecase scenario\n" + 
+            "val scenario = new RunningExample(LocalTime.parse(\"13:00:00Z\", DateTimeFormatter.ISO_OFFSET_TIME))\n" + 
+            "val subjectA = new scenario.Subject(\"A\")\n" + 
+            "val subjectB = new scenario.Subject(\"B\")\n" + 
+            "val resourceA = new scenario.Resource(\"machine\", \"INCIDENT_HAPPENED\");\n" + 
+            "scenario.components = List(subjectA, subjectB, resourceA)\n" + 
+            "scenario.rootEnsemble.init()\n" + 
+            "scenario.rootEnsemble.solve()\n" + 
+            "val testActionAllow = scenario.rootEnsemble.instance.sendRawDataP1Rule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && convertToCol(x.allowedSubjects).contains(subjectB))\n" + 
+            "if(testActionAllow) {\n" + 
+            "println(\"allow\")\n" + 
+            "} else {\n" + 
+            "println(\"deny\")\n" + 
+            "}";
+    
+    private static final String CODE_3_DENY = "//TODO: adapt to your usecase scenario\n" + 
+            "val scenario = new RunningExample(LocalTime.parse(\"13:00:00Z\", DateTimeFormatter.ISO_OFFSET_TIME))\n" + 
+            "val subjectA = new scenario.Subject(\"A\", \"Board\", \"Analyst\")\n" + 
+            "val subjectB = new scenario.Subject(\"B\")\n" + 
+            "val resourceA = new scenario.Resource(\"machine\", \"OK\");\n" + 
+            "scenario.components = List(subjectA, subjectB, resourceA)\n" + 
+            "scenario.rootEnsemble.init()\n" + 
+            "scenario.rootEnsemble.solve()\n" + 
+            "val testActionAllow = scenario.rootEnsemble.instance.aNameRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && convertToCol(x.allowedResources).contains(resourceA))\n" + 
+            "if(testActionAllow) {\n" + 
+            "println(\"allow\")\n" + 
+            "} else {\n" + 
+            "println(\"deny\")\n" + 
+            "}";
+    
     ////////////////////////////////////////////////////////////////////////////////////////////
     
 	public static void main(String[] args) {
 	    //TODO: adapt to test case, run once, refresh ScalaEnsembleTester, run again and check if result is as expected
-	    final String codeMain = CODE_TEST_ALLOW; 
+	    final String codeMain = CODE_3_DENY; 
 	    
 	    final PolicyLoader loader = new PolicyLoader(PATH_POLICYSET);
 	    final PolicySetHandler handler = new PolicySetHandler(loader.loadPolicySet(), codeMain);
