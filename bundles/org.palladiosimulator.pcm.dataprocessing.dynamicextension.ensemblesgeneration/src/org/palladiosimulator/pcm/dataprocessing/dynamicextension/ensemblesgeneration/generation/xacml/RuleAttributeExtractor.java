@@ -1,5 +1,6 @@
 package org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.xacml;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -129,15 +130,25 @@ public class RuleAttributeExtractor {
     }
 
     private StringBuilder calls(final List<ObligationStructure> obligations) {
-        //TODO evtl. noch besser machen mit call-content !
-        
         final StringBuilder result = new StringBuilder();
         
+        //TODO evtl. noch besser machen mit prerequisites
+        final List<StringBuilder> obligationsListFirstPrerequisites = new ArrayList<>();
+        
         for (var obligation : obligations) {
-            final String notAtEndStr = obligation.isOnlyCalledInSubjects() 
+            final boolean isPrerequisite = obligation.isOnlyCalledInSubjects();
+            final String notAtEndStr = isPrerequisite
                     ? "\"" + obligation.getName() + "\"" : "";
             final String callContent = obligation.isAtEnd() ? AttributeExtractor.VAR_NAME : notAtEndStr;
-            result.append(obligation.getMethodCall(callContent).getCodeDefinition());
+            if (isPrerequisite) {
+                obligationsListFirstPrerequisites.add(0, obligation.getMethodCall(callContent).getCodeDefinition());
+            } else {
+                obligationsListFirstPrerequisites.add(obligation.getMethodCall(callContent).getCodeDefinition());
+            }
+        }
+        
+        for (var obligationStr : obligationsListFirstPrerequisites) {
+            result.append(obligationStr);
             result.append(" && ");
         }
         
