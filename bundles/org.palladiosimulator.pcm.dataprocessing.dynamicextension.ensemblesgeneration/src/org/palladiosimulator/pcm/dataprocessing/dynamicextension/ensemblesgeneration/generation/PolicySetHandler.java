@@ -60,20 +60,42 @@ public class PolicySetHandler implements CodePart {
 
     @Override
     public ScalaBlock getCode() {
+        // preparations
+        final ScalaBlock code = prepare();
+
+        // components
+        final List<PolicyType> policies = getPolicies();
+        final var obligations = components(code, policies);
+
+        //ensembles, root-ensemble and rules
+        ensembles(code, policies);
+
+        // obligations methods
+        code.appendBlockCode(obligations(obligations));
+        
+        // helper-method(s) and main
+        code.setNext(getMain());
+
+        return code;
+    }
+    
+    private ScalaBlock prepare() {
         final ScalaBlock code = new ScalaBlock();
 
+        // package, imports and model class definition
         final ScalaClass modelClass = new ScalaClass(false, MODEL_CLASS_NAME, ScalaHelper.KEYWORD_MODEL);
         modelClass.addAllAttributes(Arrays.asList(NOW));
-
-        // package, imports and model class definition
         var preBlockCode = new StringBuilder(PACKAGE).append("\n").append(IMPORTS).append("\n")
                 .append(modelClass.getCodeDefinition());
         code.appendPreBlockCode(preBlockCode);
-
-        // components
+        
+        return code;
+    }
+    
+    private SortedSet<ObligationStructure> components(final ScalaBlock code, final List<PolicyType> policies) {
         final Set<Attribute> existingAttributes = new HashSet<>();
         final SortedSet<ObligationStructure> obligations = new TreeSet<>();
-        final List<PolicyType> policies = getPolicies();
+        
         for (final PolicyType policy : policies) {
             for (final Category category : Category.values()) {
                 final var extractor = new AttributeExtractor(policy, category);
@@ -82,11 +104,27 @@ public class PolicySetHandler implements CodePart {
             }
         }
         code.appendBlockCode(new ComponentCode(existingAttributes));
+        return obligations;
+    }
 
+    private List<PolicyType> getPolicies() {
+        final List<PolicyType> policies = new ArrayList<>();
+        for (var jaxbObject : this.policySet.getPolicySetOrPolicyOrPolicySetIdReference()) {
+            if (jaxbObject.getDeclaredType().equals(PolicyType.class)) {
+                policies.add((PolicyType) (jaxbObject.getValue()));
+            } else {
+                final String error = "illegal type, only policies are supported!";
+                SampleHandler.LOGGER.error(error);
+                throw new IllegalStateException(error);
+            }
+        }
+        return policies;
+    }
+    
+    private void ensembles(final ScalaBlock code, final List<PolicyType> policies) {
         // root ensemble
         final ScalaBlock rootEnsemble = new ScalaBlock();
         final ScalaClass systemClass = new ScalaClass(false, SYSTEM, ScalaHelper.KEYWORD_ENSEMBLE_ROOT);
-
         rootEnsemble.appendPreBlockCode(systemClass);
 
         // ensembles
@@ -103,28 +141,6 @@ public class PolicySetHandler implements CodePart {
         code.appendBlockCode(rootEnsemble);
         final String expression = new Call("root", "new " + SYSTEM).getCodeDefinition().toString();
         code.appendBlockCode(new ValueInitialisation(ROOT_ENSEMBLE_NAME, expression));
-
-        // obligations methods
-        code.appendBlockCode(obligations(obligations));
-        
-        // helper-method(s) and main
-        code.setNext(getMain());
-
-        return code;
-    }
-
-    private List<PolicyType> getPolicies() {
-        final List<PolicyType> policies = new ArrayList<>();
-        for (var jaxbObject : this.policySet.getPolicySetOrPolicyOrPolicySetIdReference()) {
-            if (jaxbObject.getDeclaredType().equals(PolicyType.class)) {
-                policies.add((PolicyType) (jaxbObject.getValue()));
-            } else {
-                final String error = "illegal type, only policies are supported!";
-                SampleHandler.LOGGER.error(error);
-                throw new IllegalStateException(error);
-            }
-        }
-        return policies;
     }
 
     private StringBuilder rules(final List<String> rulesNames) {
