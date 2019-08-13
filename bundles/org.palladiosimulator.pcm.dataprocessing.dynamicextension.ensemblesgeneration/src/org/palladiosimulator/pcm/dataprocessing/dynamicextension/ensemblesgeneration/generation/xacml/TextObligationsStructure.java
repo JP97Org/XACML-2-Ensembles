@@ -6,11 +6,21 @@ import java.util.stream.Collectors;
 
 import oasis.names.tc.xacml._3_0.core.schema.wd_17.ObligationExpressionsType;
 
+/**
+ * Represents the structure which represents all contained text obligations of one rule.
+ * 
+ * @author Jonathan Schenkenberger
+ * @version 1.0
+ */
 public class TextObligationsStructure implements ObligationsStructure {
     private final List<ObligationStructure> obligations;
     
-    //TODO: evtl. noch mit registry machen (allg.)
-    
+    /**
+     * Creates a new text obligations structure with the given XACML obligations expression type
+     * which must all be text obligations.
+     * 
+     * @param obligations - the XACML obligations expression type.
+     */
     public TextObligationsStructure(final ObligationExpressionsType obligations) {
         // creating the obligation structure wrappers
         this.obligations = obligations != null ? obligations.getObligationExpression()

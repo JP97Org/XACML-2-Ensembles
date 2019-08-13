@@ -37,7 +37,7 @@ public class ValueDeclaration implements ScalaCode {
      * @param name
      *            - the given name
      * @param type
-     *            - the given type
+     *            - the given type (which can be a non-primitive type or Int or Double)
      * @param isOptional
      *            - whether the attribute setting is optional
      */
@@ -62,6 +62,11 @@ public class ValueDeclaration implements ScalaCode {
                 .append(this.isOptional ? getStandardValue() : "");
     }
 
+    /**
+     * Gets the standard value. At the moment, as primitive types only int and double are allowed.
+     * 
+     * @return the standard value, which is {@code null} for non-primitive types and {@code 0} for Int and Double.
+     */
     private String getStandardValue() {
         return this.type.equals(ScalaHelper.KEYWORD_INT) || this.type.equals(ScalaHelper.KEYWORD_DOUBLE) 
                 ? " = 0" : " = null";

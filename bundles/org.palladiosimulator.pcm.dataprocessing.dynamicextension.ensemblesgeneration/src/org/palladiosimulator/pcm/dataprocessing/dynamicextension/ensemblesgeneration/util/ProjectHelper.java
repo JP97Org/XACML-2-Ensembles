@@ -5,34 +5,41 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
 
+/**
+ * Helper Class for the project.
+ * 
+ * @author majuwa
+ * @author Jonathan Schenkenberger
+ * @version 1.01
+ */
 public class ProjectHelper {
-    private final static String NAME_SBT = "build.sbt";
+    private static final String NAME_SBT = "build.sbt";
     /*
      * Scala for ensembles
      */
-    private final static String SCALA_VERSION = "2.12.4";
-    private final static String SCALA_NAME = "scala-reflect";
-    private final static String SCALA_NAME_QUALIFIER = "org.scala-lang";
+    private static final String SCALA_VERSION = "2.12.4";
+    private static final String SCALA_NAME = "scala-reflect";
+    private static final String SCALA_NAME_QUALIFIER = "org.scala-lang";
     /*
      * Solver for ensembles
      */
-    private final static String SOLVER_VERSION = "4.0.0";
-    private final static String SOLVER_NAME = "choco-solver";
-    private final static String SOLVER_NAME_QUALIFIER = "org.choco-solver";
+    private static final String SOLVER_VERSION = "4.0.0";
+    private static final String SOLVER_NAME = "choco-solver";
+    private static final String SOLVER_NAME_QUALIFIER = "org.choco-solver";
     /*
      * Map for ensembles
      */
-    private final static String SCALA_MAP_VERSION = "1.0.0";
-    private final static String SCALA_MAP_NAME = "scala-prioritymap";
-    private final static String SCALA_MAP_QUALIFIER = "de.ummels";
+    private static final String SCALA_MAP_VERSION = "1.0.0";
+    private static final String SCALA_MAP_NAME = "scala-prioritymap";
+    private static final String SCALA_MAP_QUALIFIER = "de.ummels";
     /*
      * Math for ensembles
      */
-    private final static String APACHE_MATH_VERSION = "3.6.1";
-    private final static String APACHE_MATH_NAME = "commons-math3";
-    private final static String APACHE_MATH_QUALIFIER = "org.apache.commons";
+    private static final String APACHE_MATH_VERSION = "3.6.1";
+    private static final String APACHE_MATH_NAME = "commons-math3";
+    private static final String APACHE_MATH_QUALIFIER = "org.apache.commons";
 
-    private final static String SEPARATOR = " % ";
+    private static final String SEPARATOR = " % ";
 
     public static boolean buildProjectStructure(String path, String projectName) {
         try (var writer = new PrintWriter(new File(path + File.pathSeparator + NAME_SBT), Charset.forName("UTF-8"))) {

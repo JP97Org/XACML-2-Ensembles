@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.handlers.SampleHandler;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.util.ScalaHelper;
 
 import oasis.names.tc.xacml._3_0.core.schema.wd_17.MatchType;
@@ -19,7 +20,7 @@ import oasis.names.tc.xacml._3_0.core.schema.wd_17.TargetType;
  * @author Jonathan Schenkenberger
  * @verison 1.0
  */
-public class RuleAttributeExtractor {
+public class RuleAttributeExtractor {    
     private final RuleType rule;
     private final Category category;
     
@@ -78,7 +79,7 @@ public class RuleAttributeExtractor {
     }
 
     /**
-     * Extracts the check code and sets the existing attribute set.
+     * Extracts the check code and sets the existing attribute and obligation set.
      */
     private void extract() {
         final Set<Attribute> attributeResult = new HashSet<>();
@@ -98,9 +99,11 @@ public class RuleAttributeExtractor {
         if (target.getAnyOf().size() > 0) {
             final var allOfs = target.getAnyOf().get(0).getAllOf();
             if (allOfs.isEmpty()) {
-                // TODO EXC
+                final String error = "empty rule \"" + this.rule.getRuleId() + "\" (illegal input file format)";
+                SampleHandler.LOGGER.error(error);
+                throw new IllegalStateException(error);
             }
-            result.append(calls(obligationsStart));
+            result.append(createCalls(obligationsStart));
             
             final List<MatchType> matches = allOfs.get(0).getMatch();
             for (var attribute : Attribute.getCategoryAttributes(this.category)) {
@@ -116,7 +119,7 @@ public class RuleAttributeExtractor {
                     }
                 }
             }
-            result.append(calls(obligationsEnd));
+            result.append(createCalls(obligationsEnd));
 
             if (result.length() > 0) {
                 // removing last " && " and parenthesizing
@@ -129,7 +132,14 @@ public class RuleAttributeExtractor {
         this.obligationsSet = obligationResult;
     }
 
-    private StringBuilder calls(final List<ObligationStructure> obligations) {
+    /**
+     * Create the calls for all the given obligations.
+     * The calls are sorted by whether they are prerequisites or not. Prerequisites are called earlier.
+     * 
+     * @param obligations - the given obligations
+     * @return the calls for all the given obligations
+     */
+    private StringBuilder createCalls(final List<ObligationStructure> obligations) {
         final StringBuilder result = new StringBuilder();
         
         //TODO evtl. noch besser machen mit prerequisites

@@ -1,6 +1,11 @@
 package org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.MainLoader;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.Path;
+
+import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.handlers.SampleHandler;
 
 import com.att.research.xacml.util.XACMLPolicyScanner;
 
@@ -28,10 +33,24 @@ public class PolicyLoader {
      * Loads the policy set.
      * 
      * @return the policy set
+     * @throws IOException - if the file does not exist or the policy could not be read
      */
-    public PolicySetType loadPolicySet() {
-        //TODO: EXC if file not exists or other scanner error
-        return (PolicySetType) (new XACMLPolicyScanner(Path.of(this.pathPolicy), null).scan());
+    public PolicySetType loadPolicySet() throws IOException {
+        if (!new File(this.pathPolicy).exists()) {
+            final var error = "file at path \"" + this.pathPolicy + "\" does not exist";
+            SampleHandler.LOGGER.error(error);
+            throw new FileNotFoundException(error);
+        }
+        
+        final var scannedObject = (new XACMLPolicyScanner(Path.of(this.pathPolicy), null).scan());
+        if (scannedObject == null || !(scannedObject instanceof PolicySetType)) {
+            final var error = "file at path \"" + this.pathPolicy 
+                    + "\" could not be read because it is syntactically broken or defines no policy set";
+            SampleHandler.LOGGER.error(error);
+            throw new IOException(error);
+        }
+        
+        return (PolicySetType) scannedObject;
     }
 
 }

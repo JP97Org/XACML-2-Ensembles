@@ -45,23 +45,33 @@ public class SampleHandler extends AbstractHandler {
 
         // loading xacml policy set
         final PolicyLoader loader = new PolicyLoader(PATH_POLICYSET);
-        final PolicySetType policySet = loader.loadPolicySet();
-        LOGGER.info("loading " + policySet.getDescription());
-
-        // generating code
-        final PolicySetHandler handler = new PolicySetHandler(policySet, null);
-        final String code = handler.getCode().toString();
-
-        // writing code
-        final String path = PATH_SCALA_OUTPUT;
+        PolicySetType policySet = null;
         String error = null;
         try {
-            final var writer = new PrintWriter(new File(path), Charset.forName("UTF-8"));
-            writer.write(code);
-            writer.close();
-        } catch (IOException e) {
-            error = e.getMessage();
-            LOGGER.error(error);
+            policySet = loader.loadPolicySet();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+            error = e1.getMessage();
+        }
+        String path = null;
+        if (error == null) {
+            LOGGER.info("loaded " + policySet.getDescription());
+
+            // generating code
+            final PolicySetHandler handler = new PolicySetHandler(policySet, null);
+            final String code = handler.getCode().toString();
+
+            // writing code
+            path = PATH_SCALA_OUTPUT;
+       
+            try {
+                final var writer = new PrintWriter(new File(path), Charset.forName("UTF-8"));
+                writer.write(code);
+                writer.close();
+            } catch (IOException e) {
+                error = e.getMessage();
+                LOGGER.error(error);
+            }
         }
 
         // inform user

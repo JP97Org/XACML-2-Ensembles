@@ -59,25 +59,49 @@ public class PolicyCodePart implements CodePart {
 
         // environment
         final var environmentExtractor = new AttributeExtractor(this.policy, Category.ENVIRONMENT);
-        ensembleCode.appendBlockCode(situation(environmentExtractor.extract()));
+        ensembleCode.appendBlockCode(getSituation(environmentExtractor.extract()));
 
         ensembleCode.appendBlockCode(new StringBuilder("\n"));
-        ensembleCode.appendBlockCode(allow(SUBJECT_FIELD_NAME, this.actionName, RESOURCE_FIELD_NAME));
+        ensembleCode.appendBlockCode(getAllow(SUBJECT_FIELD_NAME, this.actionName, RESOURCE_FIELD_NAME));
 
         return ensembleCode;
     }
 
+    /**
+     * Gets the expression which checks the attributes of the category with the category class name 
+     * and the extraction result of the given attribute extractor.
+     * 
+     * @param categoryClassName - the given category class name
+     * @param extractor - the given attribute extractor
+     * @return the expression which checks the attributes of the category
+     */
     private String getExpression(final String categoryClassName, final AttributeExtractor extractor) {
         final StringBuilder extractionResult = extractor.extract();
         return COMPONENTS + ".select[" + categoryClassName + "]." + "filter(" + AttributeExtractor.VAR_NAME + " => "
                 + (extractionResult.length() == 0 ? "true" : extractionResult) + ")" + MAPPING;
     }
 
-    private Call allow(final String subjects, final String action, final String resourceName) {
-        return new Call(ScalaHelper.KEYWORD_ALLOW, subjects + ", " + "\"" + action + "\", " + resourceName);
+    /**
+     * Gets the allow call.
+     * 
+     * @param subjectsName - the subjects field name
+     * @param actionName - the action name
+     * @param resourcesName - the resources field name
+     * @return the allow call
+     */
+    private Call getAllow(final String subjectsName, final String actionName, final String resourcesName) {
+        return new Call(ScalaHelper.KEYWORD_ALLOW, subjectsName + ", " + "\"" + actionName + "\", " + resourcesName);
     }
 
-    private StringBuilder situation(final StringBuilder expression) {
+    /**
+     * Gets the situation expression if environment attributes exist, i.e. the check expression is not empty.
+     * Otherwise, the empty expression is returned.
+     * 
+     * @param expression - the check expression
+     * @return the situation expression if environment attributes exist,
+     * otherwise, the empty expression is returned.
+     */
+    private StringBuilder getSituation(final StringBuilder expression) {
         if (expression.length() > 0) {
             return expression.insert(0, SITUATION + " {\n").append("\n}");
         }

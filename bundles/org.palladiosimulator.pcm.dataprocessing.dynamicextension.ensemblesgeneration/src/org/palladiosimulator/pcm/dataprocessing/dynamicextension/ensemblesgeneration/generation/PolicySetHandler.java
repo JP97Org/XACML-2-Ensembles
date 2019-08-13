@@ -65,13 +65,13 @@ public class PolicySetHandler implements CodePart {
 
         // components
         final List<PolicyType> policies = getPolicies();
-        final var obligations = components(code, policies);
+        final var obligations = addComponents(code, policies);
 
         //ensembles, root-ensemble and rules
-        ensembles(code, policies);
+        addEnsembles(code, policies);
 
         // obligations methods
-        code.appendBlockCode(obligations(obligations));
+        code.appendBlockCode(createObligations(obligations));
         
         // helper-method(s) and main
         code.setNext(getMain());
@@ -79,6 +79,11 @@ public class PolicySetHandler implements CodePart {
         return code;
     }
     
+    /**
+     * Prepares the code block.
+     * 
+     * @return a code block with package, imports and model class definition
+     */
     private ScalaBlock prepare() {
         final ScalaBlock code = new ScalaBlock();
 
@@ -92,7 +97,14 @@ public class PolicySetHandler implements CodePart {
         return code;
     }
     
-    private SortedSet<ObligationStructure> components(final ScalaBlock code, final List<PolicyType> policies) {
+    /**
+     * Adds the component code to the code block.
+     * 
+     * @param code - the code block
+     * @param policies - the policies
+     * @return a sorted set of all existing obligation structures
+     */
+    private SortedSet<ObligationStructure> addComponents(final ScalaBlock code, final List<PolicyType> policies) {
         final Set<Attribute> existingAttributes = new HashSet<>();
         final SortedSet<ObligationStructure> obligations = new TreeSet<>();
         
@@ -107,6 +119,11 @@ public class PolicySetHandler implements CodePart {
         return obligations;
     }
 
+    /**
+     * Gets the policies.
+     * 
+     * @return the policies
+     */
     private List<PolicyType> getPolicies() {
         final List<PolicyType> policies = new ArrayList<>();
         for (var jaxbObject : this.policySet.getPolicySetOrPolicyOrPolicySetIdReference()) {
@@ -121,7 +138,13 @@ public class PolicySetHandler implements CodePart {
         return policies;
     }
     
-    private void ensembles(final ScalaBlock code, final List<PolicyType> policies) {
+    /**
+     * Adds the root ensemble, ensembles and rules code to the code block.
+     * 
+     * @param code - the code block
+     * @param policies - the policies
+     */
+    private void addEnsembles(final ScalaBlock code, final List<PolicyType> policies) {
         // root ensemble
         final ScalaBlock rootEnsemble = new ScalaBlock();
         final ScalaClass systemClass = new ScalaClass(false, SYSTEM, ScalaHelper.KEYWORD_ENSEMBLE_ROOT);
@@ -137,13 +160,19 @@ public class PolicySetHandler implements CodePart {
         }
 
         // rules and root ensemble
-        rootEnsemble.appendBlockCode(rules(rulesNames));
+        rootEnsemble.appendBlockCode(createRules(rulesNames));
         code.appendBlockCode(rootEnsemble);
         final String expression = new Call("root", "new " + SYSTEM).getCodeDefinition().toString();
         code.appendBlockCode(new ValueInitialisation(ROOT_ENSEMBLE_NAME, expression));
     }
 
-    private StringBuilder rules(final List<String> rulesNames) {
+    /**
+     * Creates the rules assignments for the given rule names.
+     * 
+     * @param rulesNames - the given rule names
+     * @return the rules assignments
+     */
+    private StringBuilder createRules(final List<String> rulesNames) {
         final StringBuilder ret = new StringBuilder();
         for (final String ruleName : rulesNames) {
             final String expression = new Call("rules", ruleName).getCodeDefinition().toString();
@@ -153,7 +182,13 @@ public class PolicySetHandler implements CodePart {
         return ret.append("\n");
     }
     
-    private StringBuilder obligations(final SortedSet<ObligationStructure> obligations) {
+    /**
+     * Creates the method blocks of the obligations.
+     * 
+     * @param obligations - the obligations
+     * @return the obligations method blocks
+     */
+    private StringBuilder createObligations(final SortedSet<ObligationStructure> obligations) {
         final StringBuilder ret = new StringBuilder("\n");
         
         for (var obligation : obligations) {
@@ -164,6 +199,11 @@ public class PolicySetHandler implements CodePart {
         return ret;
     }
 
+    /**
+     * Gets the RunningExample class with the contained helper method(s) and main method.
+     * 
+     * @return the RunningExample class with the contained helper method(s) and main method
+     */
     private ScalaBlock getMain() {
         final ScalaBlock ret = new ScalaBlock();
 
@@ -192,6 +232,11 @@ public class PolicySetHandler implements CodePart {
         return ret;
     }
 
+    /**
+     * Gets the convert helper method (a helper function which converts iterable to collection).
+     * 
+     * @return the convert helper method (a helper function which converts iterable to collection)
+     */
     private ScalaBlock convert() {
         final ScalaBlock ret = new ScalaBlock();
         final var signature = new MethodSignature("convertToCol",

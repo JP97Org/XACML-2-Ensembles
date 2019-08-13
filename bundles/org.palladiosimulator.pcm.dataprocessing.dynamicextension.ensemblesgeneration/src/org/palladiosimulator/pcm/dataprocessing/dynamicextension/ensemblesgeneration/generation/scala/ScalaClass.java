@@ -57,6 +57,11 @@ public class ScalaClass implements ScalaCode {
                 .append(this.superClass);
     }
 
+    /**
+     * Gets the attribute list of this scala class.
+     * 
+     * @return the attribute list of this scala class
+     */
     private StringBuilder getAttributeList() {
         if (!this.attributes.isEmpty()) {
             final StringBuilder builder = new StringBuilder("(");

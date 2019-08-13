@@ -142,7 +142,13 @@ public class Test {
 	    final String codeMain = CODE_TEST_ALLOW; 
 	    
 	    final PolicyLoader loader = new PolicyLoader(PATH_POLICYSET);
-	    final PolicySetHandler handler = new PolicySetHandler(loader.loadPolicySet(), codeMain);
+	    PolicySetHandler handler = null;
+        try {
+            handler = new PolicySetHandler(loader.loadPolicySet(), codeMain);
+        } catch (IOException e1) {
+            e1.printStackTrace();
+            return;
+        }
 	    final String code = handler.getCode().getCodeDefinition().toString();
 	    
 	    // writing code
