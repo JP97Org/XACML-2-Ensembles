@@ -17,8 +17,15 @@ public class Test {
     private static final String DIR_POLICYSETS = "out/";
     private static final String DIR_SCALA_OUTPUT = "models/ensembleTester/src/main/scala/scenarios/"; 
 
-    private static final String FILENAME_POLICYSET = "UC-Test.xml"; // "UC3.xml"; // "UC-Combined.xml"; // "UC-Shift.xml"; // "UC-Shift.xml"; // 
+    //TODO: adapt to test case
+    private static final String FILENAME_POLICYSET = "UC-Shift.xml"; // "UC-Empty.xml"; // "UC-Test.xml"; // "UC3.xml"; // "UC-Combined.xml"; // "UC-Shift.xml"; // "UC-Empty.xml"; //
+    
     private static final String FILENAME_SCALA_OUTPUT = "out.scala";
+    
+    private static String getCode() {
+        //TODO: adapt to test case, run once, refresh ScalaEnsembleTester, run again and check if result is as expected
+        return CODE_SHIFT_DENY; 
+    }
     ////////////////////////////////////////////////////////////////////////////////////////////
 
     private static final String PATH_POLICYSET = PATH_PREFIX + DIR_POLICYSETS + FILENAME_POLICYSET;
@@ -46,7 +53,7 @@ public class Test {
             + "if(testActionAllow) {\n" + "println(\"allow\")\n" + "} else {\n" + "println(\"deny\")\n" + "}";
     
     private static final String CODE_SHIFT_ALLOW = "//TODO: adapt to your usecase scenario\n" + 
-            "val scenario = new RunningExample(LocalTime.parse(\"13:00:00Z\", DateTimeFormatter.ISO_OFFSET_TIME))\n" + 
+            "val scenario = new RunningExample(LocalTime.parse(\"14:00:00Z\", DateTimeFormatter.ISO_OFFSET_TIME))\n" + 
             "val subjectA = new scenario.Subject(\"A\", \"Production_Hall\", \"A\", \"Worker\", \"Early-Production\")\n" + 
             "val subjectB = new scenario.Subject(\"B\")\n" + 
             "val resourceA = new scenario.Resource(\"data\");\n" + 
@@ -61,7 +68,7 @@ public class Test {
             "}";
     
     private static final String CODE_SHIFT_DENY = "//TODO: adapt to your usecase scenario\n" + 
-            "val scenario = new RunningExample(LocalTime.parse(\"15:00:00Z\", DateTimeFormatter.ISO_OFFSET_TIME))\n" + 
+            "val scenario = new RunningExample(LocalTime.parse(\"05:59:59Z\", DateTimeFormatter.ISO_OFFSET_TIME))\n" + 
             "val subjectA = new scenario.Subject(\"A\", \"Production_Hall\", \"A\", \"Worker\", \"Early-Production\")\n" + 
             "val subjectB = new scenario.Subject(\"B\")\n" + 
             "val resourceA = new scenario.Resource(\"data\");\n" + 
@@ -135,11 +142,26 @@ public class Test {
             "println(\"deny\")\n" + 
             "}";
     
+    private static final String CODE_EMPTY_ALLOW = "//TODO: adapt to your usecase scenario\n" + 
+            "val scenario = new RunningExample(LocalTime.parse(\"14:00:00Z\", DateTimeFormatter.ISO_OFFSET_TIME))\n" + 
+            "val subjectA = new scenario.Subject(\"A\")\n" + 
+            "val subjectB = new scenario.Subject(\"B\")\n" + 
+            "val resourceA = new scenario.Resource(\"data\");\n" + 
+            "scenario.components = List(subjectA, subjectB, resourceA)\n" + 
+            "scenario.rootEnsemble.init()\n" + 
+            "val solved = scenario.rootEnsemble.solve()\n" + 
+            "val testActionAllow = solved\n" + 
+            "if(testActionAllow) {\n" + 
+            "println(\"allow\")\n" + 
+            "} else {\n" + 
+            "println(\"deny\")\n" + 
+            "}";
+    
     ////////////////////////////////////////////////////////////////////////////////////////////
     
 	public static void main(String[] args) {
-	    //TODO: adapt to test case, run once, refresh ScalaEnsembleTester, run again and check if result is as expected
-	    final String codeMain = CODE_TEST_ALLOW; 
+	    //TODO: see above in settings
+	    final String codeMain = getCode();
 	    
 	    final PolicyLoader loader = new PolicyLoader(PATH_POLICYSET);
 	    PolicySetHandler handler = null;
