@@ -103,7 +103,7 @@ public class TextObligationStructure implements ObligationStructure {
     }
 
     @Override
-    public boolean isOnlyCalledInSubjects() {
+    public boolean isPrerequisite() {
         return this.isPrerequisite;
     }
 

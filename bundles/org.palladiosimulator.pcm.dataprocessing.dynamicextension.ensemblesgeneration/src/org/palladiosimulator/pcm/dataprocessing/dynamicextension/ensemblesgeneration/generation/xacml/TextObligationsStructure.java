@@ -33,7 +33,7 @@ public class TextObligationsStructure implements ObligationsStructure {
             return new ArrayList<>();
         } else if (category != Category.SUBJECT) {
             return this.obligations.stream()
-                    .filter(x -> !x.isOnlyCalledInSubjects()).collect(Collectors.toList());
+                    .filter(x -> !x.isPrerequisite()).collect(Collectors.toList());
         } else {
             return new ArrayList<>(this.obligations);
         }

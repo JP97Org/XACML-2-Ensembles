@@ -20,10 +20,12 @@ import oasis.names.tc.xacml._3_0.core.schema.wd_17.TargetType;
  * @author Jonathan Schenkenberger
  * @verison 1.0
  */
-public class RuleAttributeExtractor {    
+public class RuleAttributeExtractor {
+    private static final String AND = " && ";
+    
     private final RuleType rule;
     private final Category category;
-    
+
     private StringBuilder extractionResult;
     private Set<Attribute> attributeSet;
     private Set<ObligationStructure> obligationsSet;
@@ -31,8 +33,10 @@ public class RuleAttributeExtractor {
     /**
      * Creates a new rule attribute extractor for the given rule and the given category.
      * 
-     * @param rule - the given rule
-     * @param category - the given category
+     * @param rule
+     *            - the given rule
+     * @param category
+     *            - the given category
      */
     public RuleAttributeExtractor(final RuleType rule, final Category category) {
         this.rule = rule;
@@ -53,7 +57,7 @@ public class RuleAttributeExtractor {
         }
         return this.attributeSet;
     }
-    
+
     /**
      * Gets the existing obligations in the defined rule and category.
      * 
@@ -67,7 +71,8 @@ public class RuleAttributeExtractor {
     }
 
     /**
-     * Gets the extraction result (extracts the check code if this extractor has not yet extracted it).
+     * Gets the extraction result (extracts the check code if this extractor has not yet extracted
+     * it).
      * 
      * @return the extraction result
      */
@@ -83,18 +88,35 @@ public class RuleAttributeExtractor {
      */
     private void extract() {
         final Set<Attribute> attributeResult = new HashSet<>();
-        
+
         // obligations sets / lists
         final Set<ObligationStructure> obligationResult = new HashSet<>(
                 new TextObligationsStructure(this.rule.getObligationExpressions()).getObligations(this.category));
         // extract the start obligations
-        final List<ObligationStructure> obligationsStart = obligationResult.stream()
-                .filter(x -> !x.isAtEnd()).collect(Collectors.toList());
-        // extract the end obligations 
-        final List<ObligationStructure> obligationsEnd = obligationResult.stream()
-                .filter(x -> x.isAtEnd()).collect(Collectors.toList());
-                
+        final List<ObligationStructure> obligationsStart = obligationResult.stream().filter(x -> !x.isAtEnd())
+                .collect(Collectors.toList());
+        // extract the end obligations
+        final List<ObligationStructure> obligationsEnd = obligationResult.stream().filter(x -> x.isAtEnd())
+                .collect(Collectors.toList());
+
         final StringBuilder result = new StringBuilder();
+        extract(result, attributeResult, obligationsStart, obligationsEnd);
+
+        this.extractionResult = result;
+        this.attributeSet = attributeResult;
+        this.obligationsSet = obligationResult;
+    }
+
+    /**
+     * Does the main extraction work.
+     * 
+     * @param result - the result string builder
+     * @param attributeResult - the attribute set
+     * @param obligationsStart - the obligations which should be added at the start
+     * @param obligationsEnd - the obligations which should be added at the end
+     */
+    private void extract(final StringBuilder result, final Set<Attribute> attributeResult,
+            final List<ObligationStructure> obligationsStart, final List<ObligationStructure> obligationsEnd) {
         final TargetType target = this.rule.getTarget();
         if (target.getAnyOf().size() > 0) {
             final var allOfs = target.getAnyOf().get(0).getAllOf();
@@ -104,7 +126,7 @@ public class RuleAttributeExtractor {
                 throw new IllegalStateException(error);
             }
             result.append(createCalls(obligationsStart));
-            
+
             final List<MatchType> matches = allOfs.get(0).getMatch();
             for (var attribute : Attribute.getCategoryAttributes(this.category)) {
                 var tmp = getMatchesConcerningAttribute(matches, attribute);
@@ -115,7 +137,7 @@ public class RuleAttributeExtractor {
                     final var values = tmp.map(m -> (String) (m.getAttributeValue().getContent().get(0)));
                     for (final String value : values.collect(Collectors.toList())) {
                         result.append(attribute.getCheckCode(value));
-                        result.append(" && ");
+                        result.append(AND);
                     }
                 }
             }
@@ -123,32 +145,26 @@ public class RuleAttributeExtractor {
 
             if (result.length() > 0) {
                 // removing last " && " and parenthesizing
-                ScalaHelper.parenthesize(result.delete(result.length() - 4, result.length()));
+                ScalaHelper.parenthesize(result.delete(result.length() - AND.length(), result.length()));
             }
         }
-
-        this.extractionResult = result;
-        this.attributeSet = attributeResult;
-        this.obligationsSet = obligationResult;
     }
 
     /**
-     * Create the calls for all the given obligations.
-     * The calls are sorted by whether they are prerequisites or not. Prerequisites are called earlier.
+     * Create the calls for all the given obligations. The calls are sorted by whether they are
+     * prerequisites or not. Prerequisites are called earlier.
      * 
-     * @param obligations - the given obligations
+     * @param obligations
+     *            - the given obligations
      * @return the calls for all the given obligations
      */
     private StringBuilder createCalls(final List<ObligationStructure> obligations) {
         final StringBuilder result = new StringBuilder();
-        
-        //TODO evtl. noch besser machen mit prerequisites
         final List<StringBuilder> obligationsListFirstPrerequisites = new ArrayList<>();
-        
+
         for (var obligation : obligations) {
-            final boolean isPrerequisite = obligation.isOnlyCalledInSubjects();
-            final String notAtEndStr = isPrerequisite
-                    ? "\"" + obligation.getName() + "\"" : "";
+            final boolean isPrerequisite = obligation.isPrerequisite();
+            final String notAtEndStr = isPrerequisite ? "\"" + obligation.getName() + "\"" : "";
             final String callContent = obligation.isAtEnd() ? AttributeExtractor.VAR_NAME : notAtEndStr;
             if (isPrerequisite) {
                 obligationsListFirstPrerequisites.add(0, obligation.getMethodCall(callContent).getCodeDefinition());
@@ -156,24 +172,25 @@ public class RuleAttributeExtractor {
                 obligationsListFirstPrerequisites.add(obligation.getMethodCall(callContent).getCodeDefinition());
             }
         }
-        
+
         for (var obligationStr : obligationsListFirstPrerequisites) {
             result.append(obligationStr);
-            result.append(" && ");
+            result.append(AND);
         }
-        
+
         return result;
     }
 
     /**
      * Gets the matches concerning the attribute.
      * 
-     * @param matches - the matches
-     * @param attribute - the attribute
+     * @param matches
+     *            - the matches
+     * @param attribute
+     *            - the attribute
      * @return the matches concerning the attribute.
      */
-    private Stream<MatchType> getMatchesConcerningAttribute(final List<MatchType> matches,
-            final Attribute attribute) {
+    private Stream<MatchType> getMatchesConcerningAttribute(final List<MatchType> matches, final Attribute attribute) {
         // gets only the matches concerning the attributeId and matchFunction
         return matches.stream()
                 .filter(m -> m.getAttributeDesignator().getAttributeId().equals(attribute.getAttributeId()))

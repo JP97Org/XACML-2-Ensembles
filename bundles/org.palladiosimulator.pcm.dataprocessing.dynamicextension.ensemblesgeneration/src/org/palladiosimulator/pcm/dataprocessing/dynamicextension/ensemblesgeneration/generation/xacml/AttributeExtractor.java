@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.handlers.SampleHandler;
+import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.util.ScalaHelper;
 
 import oasis.names.tc.xacml._3_0.core.schema.wd_17.PolicyType;
 import oasis.names.tc.xacml._3_0.core.schema.wd_17.RuleType;
@@ -18,6 +19,7 @@ import oasis.names.tc.xacml._3_0.core.schema.wd_17.RuleType;
  */
 public class AttributeExtractor {
     public static final String VAR_NAME = "x";
+    private static final String OR = " || ";
 
     private final PolicyType policy;
     private final Category category;
@@ -71,23 +73,20 @@ public class AttributeExtractor {
      * @return the check code for the whole policy and the defined category
      */
     public StringBuilder extract() {
-        final StringBuilder ret = new StringBuilder("(");
+        final StringBuilder ret = new StringBuilder();
 
         final List<RuleType> rules = getRules();
         for (final RuleType rule : rules) {
             final StringBuilder extractionResult = new RuleAttributeExtractor(rule, this.category).getExtractionResult();
             if (extractionResult.length() > 0) {
                 ret.append(extractionResult);
-                ret.append(" || ");
+                ret.append(OR);
             }
         }
 
         if (ret.length() > 1) {
-            // deleting last " || " and adding closing parenthesis for starting open parenthesis
-            ret.delete(ret.length() - 4, ret.length()).append(")");
-        } else {
-            // deleting first open parenthesis
-            ret.deleteCharAt(0);
+            // deleting last " || " and parenthesize
+            ScalaHelper.parenthesize(ret.delete(ret.length() - OR.length(), ret.length()));
         }
 
         return ret;

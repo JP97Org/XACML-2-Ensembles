@@ -27,11 +27,12 @@ public interface ObligationStructure extends Comparable<ObligationStructure> {
     public Call getMethodCall(final String callContent);
     
     /**
-     * Determines whether this obligation is only called in subjects.
+     * Determines whether this obligation is a prerequisite, i.e. it is only called in subjects
+     * and before obligations which are not prerequisites.
      * 
-     * @return whether this obligation is only called in subjects
+     * @return whether this obligation is a prerequisite
      */
-    public boolean isOnlyCalledInSubjects();
+    public boolean isPrerequisite();
     
     /**
      * Determines whether this obligation is to be fulfilled at the end of the checks.
