@@ -23,11 +23,17 @@ public class CallTest {
         this.callTwo = new Call(NAME, VAL_DECL);
     }
     
+    /**
+     * Tests first constructor.
+     */
     @Test
     public void oneTest() {
         Assert.assertEquals(NAME + "(" + CALL_CONTENT + ")", this.callOne.getCodeDefinition().toString());
     }
     
+    /**
+     * Tests second constructor.
+     */
     @Test
     public void twoTest() {
         final StringJoiner valDeclStr = new StringJoiner(", ","","");

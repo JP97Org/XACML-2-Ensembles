@@ -21,11 +21,17 @@ public class ScalaClassTest {
         this.scalaObject = new ScalaClass(true, "name", "superClass");
     }
     
+    /**
+     * Tests a class definition.
+     */
     @Test
     public void classTest() {
         Assert.assertEquals("class name extends superClass", this.scalaClass.getCodeDefinition().toString());
     }
     
+    /**
+     * Tests the addAllAttributes method for classes.
+     */
     @Test
     public void addAttributesClassTest() {
         this.scalaClass.addAllAttributes(VAL_DECL);
@@ -37,11 +43,17 @@ public class ScalaClassTest {
         Assert.assertEquals(expected, this.scalaClass.getCodeDefinition().toString());
     }
 
+    /**
+     * Tests a singleton definition.
+     */
     @Test
     public void objectTest() {
         Assert.assertEquals("object name extends superClass", this.scalaObject.getCodeDefinition().toString());
     }
     
+    /**
+     * Tests the addAllAttributes method for objects.
+     */
     @Test
     public void addAttributesObjectTest() {
         this.scalaObject.addAllAttributes(VAL_DECL);

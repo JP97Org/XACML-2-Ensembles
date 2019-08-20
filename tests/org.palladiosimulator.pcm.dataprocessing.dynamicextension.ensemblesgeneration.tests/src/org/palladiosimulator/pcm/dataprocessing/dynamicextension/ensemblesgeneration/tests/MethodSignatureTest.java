@@ -23,6 +23,9 @@ public class MethodSignatureTest {
         this.withoutArgs = new MethodSignature(NAME, null, TYPE);
     }
     
+    /**
+     * Tests signature with arguments.
+     */
     @Test
     public void signatureTest() {
         final StringJoiner valDeclStr = new StringJoiner(", ","","");
@@ -32,6 +35,9 @@ public class MethodSignatureTest {
         Assert.assertEquals("def " + NAME + "(" + valDeclStr + ") : " + TYPE + " =", this.signature.getCodeDefinition().toString());
     }
     
+    /**
+     * Tests signature without arguments.
+     */
     @Test
     public void withoutArgsTest() {
         Assert.assertEquals("def " + NAME + "() : " + TYPE + " =", this.withoutArgs.getCodeDefinition().toString());

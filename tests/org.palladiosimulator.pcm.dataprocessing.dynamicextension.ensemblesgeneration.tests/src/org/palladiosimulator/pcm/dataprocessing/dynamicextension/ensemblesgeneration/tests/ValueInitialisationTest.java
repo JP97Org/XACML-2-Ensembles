@@ -11,6 +11,9 @@ public class ValueInitialisationTest {
         this.valInit = new ValueInitialisation("name", "expression");
     }
     
+    /**
+     * Tests a value initialisation.
+     */
     @Test
     public void test() {
         Assert.assertEquals("val name = expression\n", this.valInit.getCodeDefinition().toString());

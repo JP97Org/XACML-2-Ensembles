@@ -11,6 +11,12 @@ import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgenera
 
 import scenarios.RunningExample;
 
+/**
+ * Scenario testing structure for the XACML-2-Ensembles transformation. Tests a complete transformation.
+ * 
+ * @author Jonathan Schenkenberger
+ * @version 1.0
+ */
 public class Test {
     // SETTINGS ////////////////////////////////////////////////////////////////////////////////
     private static final String PATH_PREFIX = "/home/jojo/Schreibtisch/KIT/Bachelorarbeit/";
