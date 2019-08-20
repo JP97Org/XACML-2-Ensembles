@@ -4,7 +4,7 @@ import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgenera
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ScalaBlock;
 
 /**
- * Represents a structure which represents one obligation.
+ * Represents a structure which represents one obligation method structure.
  * 
  * @author Jonathan Schenkenberger
  * @version 1.0

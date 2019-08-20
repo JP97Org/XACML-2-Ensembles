@@ -18,8 +18,8 @@ import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgenera
  * @verison 1.0
  */
 public class ComponentCode implements ScalaCode {
-    public static final String SUBJECT_CLASS_NAME = "Subject";
-    public static final String RESOURCE_CLASS_NAME = "Resource";
+    public static final String SUBJECT_CLASS_NAME = ScalaHelper.KEYWORD_SUBJECT;
+    public static final String RESOURCE_CLASS_NAME = ScalaHelper.KEYWORD_RESOURCE;
 
     private final Set<Attribute> existingAttributes;
 
