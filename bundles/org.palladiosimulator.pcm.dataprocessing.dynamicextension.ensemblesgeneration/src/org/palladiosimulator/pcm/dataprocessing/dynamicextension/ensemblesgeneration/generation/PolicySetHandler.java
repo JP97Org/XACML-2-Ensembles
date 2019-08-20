@@ -225,8 +225,14 @@ public class PolicySetHandler implements CodePart {
                 + "val resourceA = new scenario.Resource(\"machine\", \"INCIDENT_HAPPENED\", \"PUBLIC\", 5, 4)\n"
                 + "scenario.components = List(subjectA, subjectB, resourceA)\n" + "scenario.rootEnsemble.init()\n"
                 + "val solved = scenario.rootEnsemble.solve()\n"
-                + "val testActionAllow = solved && scenario.rootEnsemble.instance.testActionRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && !convertToCol(x.allowedSubjects).contains(subjectB))\n"
-                + "if(testActionAllow) {\n" + "println(\"allow\")\n" + "} else {\n" + "println(\"deny\")\n" + "}" : this.mainCode));
+                + "val testActionAllow = solved "
+                + "&& scenario.rootEnsemble.instance.testActionRule.selectedMembers.exists("
+                + "x => convertToCol(x.allowedSubjects).contains(subjectA) "
+                + "&& !convertToCol(x.allowedSubjects).contains(subjectB))\n"
+                + "if(testActionAllow) {\n" 
+                + "println(\"allow\")\n" 
+                + "} else {\n" 
+                + "println(\"deny\")\n" + "}" : this.mainCode));
 
         ret.appendBlockCode(main);
         return ret;

@@ -41,6 +41,13 @@ public class ProjectHelper {
 
     private static final String SEPARATOR = " % ";
 
+    /**
+     * Method to write build.sbt.
+     * 
+     * @param path - the path
+     * @param projectName - the project name
+     * @return whether writing was successful
+     */
     public static boolean buildProjectStructure(String path, String projectName) {
         try (var writer = new PrintWriter(new File(path + File.pathSeparator + NAME_SBT), Charset.forName("UTF-8"))) {
             /*
@@ -70,10 +77,23 @@ public class ProjectHelper {
         return true;
     }
 
+    /**
+     * Wraps the given string with quotes.
+     * 
+     * @param s - the given string
+     * @return the string wrapped with quotes
+     */
     private static String wrapQuotes(String s) {
         return "\"" + s + "\"";
     }
 
+    /**
+     * Writes the given string and a comma.
+     * 
+     * @param writer - the writer
+     * @param s - the given string
+     * @throws IOException - if an IO exception occurs
+     */
     private static void writeComma(PrintWriter writer, String s) throws IOException {
         writer.println(s + ",");
     }
