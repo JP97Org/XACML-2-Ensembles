@@ -7,8 +7,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.PolicyCodePart;
-import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.Call;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.handlers.SampleHandler;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.util.ScalaHelper;
 
@@ -23,7 +21,7 @@ import oasis.names.tc.xacml._3_0.core.schema.wd_17.TargetType;
  * @verison 1.0
  */
 public class RuleAttributeExtractor {
-    private static final String AND = " && ";
+    protected static final String AND = " && ";
     
     private final RuleType rule;
     private final Category category;
@@ -31,7 +29,6 @@ public class RuleAttributeExtractor {
     private StringBuilder extractionResult;
     private Set<Attribute> attributeSet;
     private Set<ObligationStructure> obligationsSet;
-    private String shiftName;
 
     /**
      * Creates a new rule attribute extractor for the given rule and the given category.
@@ -47,7 +44,6 @@ public class RuleAttributeExtractor {
         this.extractionResult = null;
         this.attributeSet = null;
         this.obligationsSet = null;
-        this.shiftName = null;
     }
 
     /**
@@ -85,18 +81,6 @@ public class RuleAttributeExtractor {
             extract();
         }
         return this.extractionResult;
-    }
-    
-    /**
-     * Gets the shift name. Does an extraction if necessary or shift name is null.
-     * 
-     * @return the shift name
-     */
-    protected String getShiftName() {
-        if (this.shiftName == null) {
-            extract();
-        }
-        return this.shiftName;
     }
 
     /**
@@ -141,7 +125,7 @@ public class RuleAttributeExtractor {
                 SampleHandler.LOGGER.error(error);
                 throw new IllegalStateException(error);
             }
-            result.append(createCalls(obligationsStart, null));
+            result.append(createCalls(obligationsStart));
 
             final List<MatchType> matches = allOfs.get(0).getMatch();
             for (var attribute : Attribute.getCategoryAttributes(this.category)) {
@@ -154,16 +138,10 @@ public class RuleAttributeExtractor {
                     for (final String value : values.collect(Collectors.toList())) {
                         result.append(attribute.getCheckCode(value));
                         result.append(AND);
-                        if (attribute == Attribute.SHIFT_NAME) {
-                            if (this.shiftName != null && !this.shiftName.equals(value)) {
-                                SampleHandler.LOGGER.warn("duplicate shift definition, created ensemble is never satisfiable!");
-                            }
-                            this.shiftName = value;
-                        }
                     }
                 }
             }
-            result.append(createCalls(obligationsEnd, shiftName));
+            result.append(createCalls(obligationsEnd));
 
             if (result.length() > 0) {
                 // removing last " && " and parenthesizing
@@ -173,17 +151,14 @@ public class RuleAttributeExtractor {
     }
 
     /**
-     * Create the calls for all the given obligations and the call for shift check. 
+     * Create the calls for all the given obligations. 
      * The calls are sorted by whether they are prerequisites or not. Prerequisites are called earlier.
-     * The call for shift checking is called at the end
      * 
      * @param obligations
      *            - the given obligations
-     * @param shiftNameArg
-     *            - the shift name or null if shift is not checked
      * @return the calls for all the given obligations
      */
-    private StringBuilder createCalls(final List<ObligationStructure> obligations, final String shiftNameArg) {
+    private StringBuilder createCalls(final List<ObligationStructure> obligations) {
         final StringBuilder result = new StringBuilder();
         final List<StringBuilder> obligationsListFirstPrerequisites = new ArrayList<>();
 
@@ -200,11 +175,6 @@ public class RuleAttributeExtractor {
 
         for (var obligationStr : obligationsListFirstPrerequisites) {
             result.append(obligationStr);
-            result.append(AND);
-        }
-        
-        if (shiftNameArg != null) {
-            result.append(new Call(PolicyCodePart.SET_SHIFT_NAME, "\"" + shiftNameArg + "\"").getCodeDefinition());
             result.append(AND);
         }
 

@@ -30,7 +30,7 @@ public class Test {
     
     private static String getCode() {
         //TODO: adapt to test case, run once, refresh ScalaEnsembleTester, run again and check if result is as expected
-        return CODE_TEST_ALLOW; 
+        return CODE_TEST_DENY_SHIFT2; 
     }
     ////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -87,6 +87,21 @@ public class Test {
             "scenario.rootEnsemble.init()\n" + 
             "val solved = scenario.rootEnsemble.solve()\n" + 
             "val testActionAllow = solved && scenario.rootEnsemble.instance.multipleShiftsActionRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && convertToCol(x.allowedResources).contains(resourceA) && !convertToCol(x.allowedSubjects).contains(subjectB))\n" + 
+            "if(testActionAllow) {\n" + 
+            "println(\"allow\")\n" + 
+            "} else {\n" + 
+            "println(\"deny\")\n" + 
+            "}";
+    
+    private static final String CODE_TEST_ALLOW_SHIFT_OVERLAP = "//TODO: adapt to your usecase scenario\n" + 
+            "val scenario = new RunningExample(LocalTime.parse(\"14:00:00Z\", DateTimeFormatter.ISO_OFFSET_TIME))\n" + 
+            "val subjectA = new scenario.Subject(\"A\", \"Production_Hall_Section_1\", \"ASub\", \"Worker\", \"Shift 1\")\n" + 
+            "val subjectB = new scenario.Subject(\"B\", \"Production_Hall_Section_1\", \"ASub\", \"Worker\", \"Shift 2\")\n" + 
+            "val resourceA = new scenario.Resource(\"machine\", \"INCIDENT_HAPPENED\", \"PUBLIC\", 5, 4)\n" + 
+            "scenario.components = List(subjectA, subjectB, resourceA)\n" + 
+            "scenario.rootEnsemble.init()\n" + 
+            "val solved = scenario.rootEnsemble.solve()\n" + 
+            "val testActionAllow = solved && scenario.rootEnsemble.instance.multipleShiftsActionRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && convertToCol(x.allowedResources).contains(resourceA) && convertToCol(x.allowedSubjects).contains(subjectB))\n" + 
             "if(testActionAllow) {\n" + 
             "println(\"allow\")\n" + 
             "} else {\n" + 

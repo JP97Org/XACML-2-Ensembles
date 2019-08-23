@@ -24,7 +24,7 @@ public class ScalabilityEvaluation {
     private static final String DIR_SCALA_OUTPUT = "out/scalaEval/"; 
     
     // printing needs at least 0.2GB free disk space
-    private static final boolean IS_PRINTING = true;
+    private static final boolean IS_PRINTING = false;
     ////////////////////////////////////////////////////////////////////////////////////////////
     
     private static final String PATH_IN_DIR = PATH_PREFIX + DIR_POLICYSETS;
@@ -35,14 +35,14 @@ public class ScalabilityEvaluation {
     private static final int HUNDRED = 100;
     private static final int THOUSAND = 1000;
     private static final int TEN_THOUSAND = 10000;
-    private static final int HUNDRED_THOUSAND = 100000;
+    private static final int HUNDRED_THOUSAND = 100000; 
     //private static final int FIVE_HUNDRED_THOUSAND = 500000; //is not tested due to exceeding of memory
 
     private static final String[] BASE_MODELS = { "UC-Scale", "UC-Test" };
 
     private static final int[] COPY_NUMS = { ONE, TEN, HUNDRED, THOUSAND, TEN_THOUSAND, HUNDRED_THOUSAND};
 
-    // TODO run with at least -Xmx6g
+    // TODO run with at least -Xmx8g
     public static void main(String[] args) {
         try {
             System.out.println("OR\n---------------------------------------------------------------\n");

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.PolicyCodePart;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.handlers.SampleHandler;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.util.ScalaHelper;
 
@@ -81,8 +80,15 @@ public class AttributeExtractor {
             final RuleAttributeExtractor extractor = new RuleAttributeExtractor(rule, this.category);
             final StringBuilder extractionResult = extractor.getExtractionResult();
             if (extractionResult.length() > 0) {
-                ret.append(getResult(rule, extractionResult));
-                ret.append(OR);
+                ret.append("(").append(extractionResult);
+                if (this.category == Category.SUBJECT) {
+                    // also extract environment attributes
+                    final var shiftChecks = new RuleAttributeExtractor(rule, Category.ENVIRONMENT).getExtractionResult();
+                    if (shiftChecks.length() > 0) {
+                        ret.append(RuleAttributeExtractor.AND).append(shiftChecks);
+                    }
+                }
+                ret.append(")").append(OR);
             }
         }
 
@@ -108,22 +114,5 @@ public class AttributeExtractor {
         }
         return this.policy.getCombinerParametersOrRuleCombinerParametersOrVariableDefinition().stream()
                 .map(x -> (RuleType) x).collect(Collectors.toList());
-    }
-    
-    /**
-     * Gets the result, i.e. returns the input if category != ENVIRONMENT.
-     * Otherwise, adds a shift name check.
-     * 
-     * @param extractionResult - the input
-     * @return the input or in case category == ENVIRONMENT the input and a shiftName check
-     */
-    private StringBuilder getResult(final RuleType rule, StringBuilder extractionResult) {
-        if (this.category == Category.ENVIRONMENT) {
-            final var subjectExtractor = new RuleAttributeExtractor(rule, Category.SUBJECT);
-            final var shiftName = subjectExtractor.getShiftName();
-            extractionResult.insert(0, "(" + PolicyCodePart.SHIFT_NAME.getName() + " == \"" + shiftName + "\") && ");
-            return ScalaHelper.parenthesize(extractionResult);
-        }
-        return extractionResult;
     }
 }
