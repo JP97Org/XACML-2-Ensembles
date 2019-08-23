@@ -14,6 +14,7 @@ public class ValueDeclaration implements ScalaCode {
     private final String name;
     private final String type;
     private final boolean isOptional;
+    private final boolean isVariable;
 
     /**
      * Creates a new value declaration with the given name and type. This attribute has no standard
@@ -28,6 +29,7 @@ public class ValueDeclaration implements ScalaCode {
         this.name = ScalaHelper.createIdentifier(name);
         this.type = type;
         this.isOptional = false;
+        this.isVariable = false;
     }
 
     /**
@@ -45,6 +47,27 @@ public class ValueDeclaration implements ScalaCode {
         this.name = name;
         this.type = type;
         this.isOptional = isOptional;
+        this.isVariable = false;
+    }
+
+    /**
+     * Creates a new value declaration with the given name and type. If isOptional is set, this
+     * attribute has a standard value.
+     * 
+     * @param name
+     *            - the given name
+     * @param type
+     *            - the given type (which can be a non-primitive type or Int or Double)
+     * @param isOptional
+     *            - whether the attribute setting is optional
+     * @param isVariable
+     *            - whether the attribute is variable
+     */
+    public ValueDeclaration(final String name, final String type, final boolean isOptional, final boolean isVariable) {
+        this.name = name;
+        this.type = type;
+        this.isOptional = isOptional;
+        this.isVariable = isVariable;
     }
 
     /**
@@ -58,18 +81,19 @@ public class ValueDeclaration implements ScalaCode {
 
     @Override
     public StringBuilder getCodeDefinition() {
-        return new StringBuilder(ScalaHelper.KEYWORD_VAL).append(" ").append(this.name).append(": ").append(this.type)
-                .append(this.isOptional ? getStandardValue() : "");
+        return new StringBuilder(this.isVariable ? ScalaHelper.KEYWORD_VAR : ScalaHelper.KEYWORD_VAL).append(" ")
+                .append(this.name).append(": ").append(this.type).append(this.isOptional ? getStandardValue() : "");
     }
 
     /**
      * Gets the standard value. At the moment, as primitive types only int and double are allowed.
      * 
-     * @return the standard value, which is {@code null} for non-primitive types and {@code 0} for Int and Double.
+     * @return the standard value, which is {@code null} for non-primitive types and {@code 0} for
+     *         Int and Double.
      */
     private String getStandardValue() {
-        return this.type.equals(ScalaHelper.KEYWORD_INT) || this.type.equals(ScalaHelper.KEYWORD_DOUBLE) 
-                ? " = 0" : " = null";
+        return this.type.equals(ScalaHelper.KEYWORD_INT) || this.type.equals(ScalaHelper.KEYWORD_DOUBLE) ? " = 0"
+                : " = null";
     }
 
     @Override

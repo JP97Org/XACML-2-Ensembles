@@ -13,6 +13,7 @@ public final class ScalaHelper {
     public static final String KEYWORD_CLASS = "class";
     public static final String KEYWORD_OBJECT = "object";
     public static final String KEYWORD_VAL = "val";
+    public static final String KEYWORD_VAR = "var";
     public static final String KEYWORD_EXTENDS = "extends";
     public static final String KEYWORD_STRING = "String";
     public static final String KEYWORD_INT = "Int";

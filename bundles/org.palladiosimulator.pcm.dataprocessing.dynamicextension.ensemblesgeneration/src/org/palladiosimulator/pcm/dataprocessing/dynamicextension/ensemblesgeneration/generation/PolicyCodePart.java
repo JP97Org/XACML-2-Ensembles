@@ -1,7 +1,13 @@
 package org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation;
 
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ScalaClass;
+import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ScalaCode;
+import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ValueDeclaration;
+
+import java.util.Arrays;
+
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.Call;
+import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.MethodSignature;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ScalaBlock;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ValueInitialisation;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.xacml.AttributeExtractor;
@@ -21,10 +27,29 @@ public class PolicyCodePart implements CodePart {
     private static final String POLICY_PREFIX = "policy:";
     private static final String MAPPING = ".map[" + ScalaHelper.KEYWORD_COMPONENT + "](x => x.getClass().cast(x))";
 
+    public static final ValueDeclaration SHIFT_NAME = 
+            new ValueDeclaration("shiftName", ScalaHelper.KEYWORD_STRING, true, true);
+    
+    public static final String SET_SHIFT_NAME = "setShiftName";
+    
+    private static final ScalaCode SET_SHIFT_NAME_METHOD = new ScalaCode() {
+        @Override
+        public StringBuilder getCodeDefinition() {
+            final ScalaBlock block = new ScalaBlock();
+            final var argument = new ValueDeclaration("name", ScalaHelper.KEYWORD_STRING);
+            block.appendPreBlockCode(
+                    new MethodSignature(SET_SHIFT_NAME, Arrays.asList(argument), ScalaHelper.KEYWORD_BOOLEAN));
+            block.appendBlockCode(new StringBuilder("shiftName = name\n"));
+            block.appendBlockCode(new StringBuilder("return true"));
+            return block.getCodeDefinition();
+        }
+    };
+    
     protected static final String COMPONENTS = "components";
     protected static final String SUBJECT_FIELD_NAME = "allowedSubjects";
     protected static final String RESOURCE_FIELD_NAME = "allowedResources";
     protected static final String SITUATION = "situation";
+    
     
     private final PolicyType policy;
 
@@ -47,6 +72,10 @@ public class PolicyCodePart implements CodePart {
         final var actionEnsembleClass = new ScalaClass(true, this.actionName, ScalaHelper.KEYWORD_ENSEMBLE);
         ensembleCode.appendPreBlockCode(actionEnsembleClass);
 
+        // shift name
+        ensembleCode.appendBlockCode(SHIFT_NAME);
+        ensembleCode.appendBlockCode(new StringBuilder("\n"));
+        
         // subjects
         final var subjectExtractor = new AttributeExtractor(this.policy, Category.SUBJECT);
         final String subjectExpression = getExpression(ComponentCode.SUBJECT_CLASS_NAME, subjectExtractor);
@@ -61,9 +90,14 @@ public class PolicyCodePart implements CodePart {
         final var environmentExtractor = new AttributeExtractor(this.policy, Category.ENVIRONMENT);
         ensembleCode.appendBlockCode(getSituation(environmentExtractor.extract()));
 
+        // allow call
         ensembleCode.appendBlockCode(new StringBuilder("\n"));
         ensembleCode.appendBlockCode(getAllow(SUBJECT_FIELD_NAME, this.actionName, RESOURCE_FIELD_NAME));
 
+        // setShiftName method
+        ensembleCode.appendBlockCode(new StringBuilder("\n"));
+        ensembleCode.appendBlockCode(SET_SHIFT_NAME_METHOD);
+        
         return ensembleCode;
     }
 
@@ -103,7 +137,7 @@ public class PolicyCodePart implements CodePart {
      */
     private StringBuilder getSituation(final StringBuilder expression) {
         if (expression.length() > 0) {
-            return expression.insert(0, SITUATION + " {\n").append("\n}");
+            return expression.insert(0, SITUATION + " {\n(" + SHIFT_NAME.getName() + " == null) || ").append("\n}");
         }
         return expression;
     }

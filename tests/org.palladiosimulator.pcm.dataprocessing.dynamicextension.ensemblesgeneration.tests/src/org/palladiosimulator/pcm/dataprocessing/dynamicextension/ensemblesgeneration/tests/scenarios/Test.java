@@ -48,6 +48,51 @@ public class Test {
             + "val testActionAllow = solved && scenario.rootEnsemble.instance.testActionRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && convertToCol(x.allowedResources).contains(resourceA) && !convertToCol(x.allowedSubjects).contains(subjectB))\n"
             + "if(testActionAllow) {\n" + "println(\"allow\")\n" + "} else {\n" + "println(\"deny\")\n" + "}";
     
+    private static final String CODE_TEST_ALLOW_SHIFT1 = "//TODO: adapt to your usecase scenario\n" + 
+            "val scenario = new RunningExample(LocalTime.parse(\"13:00:00Z\", DateTimeFormatter.ISO_OFFSET_TIME))\n" + 
+            "val subjectA = new scenario.Subject(\"A\", \"Production_Hall_Section_1\", \"ASub\", \"Worker\", \"Shift 1\")\n" + 
+            "val subjectB = new scenario.Subject(\"B\")\n" + 
+            "val resourceA = new scenario.Resource(\"machine\", \"INCIDENT_HAPPENED\", \"PUBLIC\", 5, 4)\n" + 
+            "scenario.components = List(subjectA, subjectB, resourceA)\n" + 
+            "scenario.rootEnsemble.init()\n" + 
+            "val solved = scenario.rootEnsemble.solve()\n" + 
+            "val testActionAllow = solved && scenario.rootEnsemble.instance.multipleShiftsActionRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && convertToCol(x.allowedResources).contains(resourceA) && !convertToCol(x.allowedSubjects).contains(subjectB))\n" + 
+            "if(testActionAllow) {\n" + 
+            "println(\"allow\")\n" + 
+            "} else {\n" + 
+            "println(\"deny\")\n" + 
+            "}";
+    
+    private static final String CODE_TEST_ALLOW_SHIFT2 = "//TODO: adapt to your usecase scenario\n" + 
+            "val scenario = new RunningExample(LocalTime.parse(\"14:00:00Z\", DateTimeFormatter.ISO_OFFSET_TIME))\n" + 
+            "val subjectA = new scenario.Subject(\"A\", \"Production_Hall_Section_1\", \"ASub\", \"Worker\", \"Shift 2\")\n" + 
+            "val subjectB = new scenario.Subject(\"B\")\n" + 
+            "val resourceA = new scenario.Resource(\"machine\", \"INCIDENT_HAPPENED\", \"PUBLIC\", 5, 4)\n" + 
+            "scenario.components = List(subjectA, subjectB, resourceA)\n" + 
+            "scenario.rootEnsemble.init()\n" + 
+            "val solved = scenario.rootEnsemble.solve()\n" + 
+            "val testActionAllow = solved && scenario.rootEnsemble.instance.multipleShiftsActionRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && convertToCol(x.allowedResources).contains(resourceA) && !convertToCol(x.allowedSubjects).contains(subjectB))\n" + 
+            "if(testActionAllow) {\n" + 
+            "println(\"allow\")\n" + 
+            "} else {\n" + 
+            "println(\"deny\")\n" + 
+            "}";
+    
+    private static final String CODE_TEST_DENY_SHIFT2 = "//TODO: adapt to your usecase scenario\n" + 
+            "val scenario = new RunningExample(LocalTime.parse(\"13:00:00Z\", DateTimeFormatter.ISO_OFFSET_TIME))\n" + 
+            "val subjectA = new scenario.Subject(\"A\", \"Production_Hall_Section_1\", \"ASub\", \"Worker\", \"Shift 2\")\n" + 
+            "val subjectB = new scenario.Subject(\"B\")\n" + 
+            "val resourceA = new scenario.Resource(\"machine\", \"INCIDENT_HAPPENED\", \"PUBLIC\", 5, 4)\n" + 
+            "scenario.components = List(subjectA, subjectB, resourceA)\n" + 
+            "scenario.rootEnsemble.init()\n" + 
+            "val solved = scenario.rootEnsemble.solve()\n" + 
+            "val testActionAllow = solved && scenario.rootEnsemble.instance.multipleShiftsActionRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && convertToCol(x.allowedResources).contains(resourceA) && !convertToCol(x.allowedSubjects).contains(subjectB))\n" + 
+            "if(testActionAllow) {\n" + 
+            "println(\"allow\")\n" + 
+            "} else {\n" + 
+            "println(\"deny\")\n" + 
+            "}";
+    
     private static final String CODE_TEST_DENY = "//TODO: adapt to your usecase scenario\n"
             + "val scenario = new RunningExample(LocalTime.parse(\"13:00:00Z\", DateTimeFormatter.ISO_OFFSET_TIME))\n"
             + "val subjectA = new scenario.Subject(\"A\", \"Production_Hall_Section_1\", \"ASub\", \"Blob\", \"Shift 1\")\n"
