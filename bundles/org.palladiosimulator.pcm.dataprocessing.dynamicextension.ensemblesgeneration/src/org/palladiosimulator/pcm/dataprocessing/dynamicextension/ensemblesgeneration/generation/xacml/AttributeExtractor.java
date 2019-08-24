@@ -80,15 +80,7 @@ public class AttributeExtractor {
             final RuleAttributeExtractor extractor = new RuleAttributeExtractor(rule, this.category);
             final StringBuilder extractionResult = extractor.getExtractionResult();
             if (extractionResult.length() > 0) {
-                ret.append("(").append(extractionResult);
-                if (this.category == Category.SUBJECT) {
-                    // also extract environment attributes
-                    final var shiftChecks = new RuleAttributeExtractor(rule, Category.ENVIRONMENT).getExtractionResult();
-                    if (shiftChecks.length() > 0) {
-                        ret.append(RuleAttributeExtractor.AND).append(shiftChecks);
-                    }
-                }
-                ret.append(")").append(OR);
+                ret.append(extractionResult).append(OR);
             }
         }
 

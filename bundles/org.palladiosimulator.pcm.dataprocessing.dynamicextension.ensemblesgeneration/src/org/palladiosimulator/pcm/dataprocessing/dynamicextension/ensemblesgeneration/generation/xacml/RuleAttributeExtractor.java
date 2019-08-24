@@ -136,9 +136,15 @@ public class RuleAttributeExtractor {
                     tmp = getMatchesConcerningAttribute(matches, attribute);
                     final var values = tmp.map(m -> (String) (m.getAttributeValue().getContent().get(0)));
                     for (final String value : values.collect(Collectors.toList())) {
-                        result.append(attribute.getCheckCode(value));
-                        result.append(AND);
+                        result.append(attribute.getCheckCode(value)).append(AND);
                     }
+                }
+            }
+            if (this.category == Category.SUBJECT) {
+                // also extract environment attributes
+                final var shiftChecks = new RuleAttributeExtractor(this.rule, Category.ENVIRONMENT).getExtractionResult();
+                if (shiftChecks.length() > 0) {
+                    result.append(shiftChecks).append(AND);
                 }
             }
             result.append(createCalls(obligationsEnd));
