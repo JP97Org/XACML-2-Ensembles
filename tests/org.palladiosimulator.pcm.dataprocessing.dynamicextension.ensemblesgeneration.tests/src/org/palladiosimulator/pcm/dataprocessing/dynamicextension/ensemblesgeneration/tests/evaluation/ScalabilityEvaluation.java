@@ -23,7 +23,7 @@ public class ScalabilityEvaluation {
     private static final String DIR_POLICYSETS = "out/";
     private static final String DIR_SCALA_OUTPUT = "out/scalaEval/"; 
     
-    // printing needs at least 0.2GB free disk space
+    // printing needs at least 0.4GB free disk space
     private static final boolean IS_PRINTING = false;
     ////////////////////////////////////////////////////////////////////////////////////////////
     

@@ -19,11 +19,10 @@ import oasis.names.tc.xacml._3_0.core.schema.wd_17.PolicyType;
  */
 public class PolicyCodePart implements CodePart {
     private static final String POLICY_PREFIX = "policy:";
-    private static final String MAPPING = ".map[" + ScalaHelper.KEYWORD_COMPONENT + "](x => x.getClass().cast(x))";
 
     protected static final String COMPONENTS = "components";
     protected static final String SUBJECT_FIELD_NAME = "allowedSubjects";
-    protected static final String RESOURCE_FIELD_NAME = "allowedResources";
+    public static final String RESOURCE_FIELD_NAME = "allowedResources";
     protected static final String SITUATION = "situation";
     
     private final PolicyType policy;
@@ -47,15 +46,15 @@ public class PolicyCodePart implements CodePart {
         final var actionEnsembleClass = new ScalaClass(true, this.actionName, ScalaHelper.KEYWORD_ENSEMBLE);
         ensembleCode.appendPreBlockCode(actionEnsembleClass);
 
-        // subjects and shifts (environment)
-        final var subjectExtractor = new AttributeExtractor(this.policy, Category.SUBJECT);
-        final String subjectExpression = getExpression(ComponentCode.SUBJECT_CLASS_NAME, subjectExtractor);
-        ensembleCode.appendBlockCode(new ValueInitialisation(SUBJECT_FIELD_NAME, subjectExpression));
-
         // resources
         final var resourceExtractor = new AttributeExtractor(this.policy, Category.RESOURCE);
         final String resourceExpression = getExpression(ComponentCode.RESOURCE_CLASS_NAME, resourceExtractor);
         ensembleCode.appendBlockCode(new ValueInitialisation(RESOURCE_FIELD_NAME, resourceExpression));
+        
+        // subjects and shifts (environment)
+        final var subjectExtractor = new AttributeExtractor(this.policy, Category.SUBJECT);
+        final String subjectExpression = getExpression(ComponentCode.SUBJECT_CLASS_NAME, subjectExtractor);
+        ensembleCode.appendBlockCode(new ValueInitialisation(SUBJECT_FIELD_NAME, subjectExpression));
 
         // allow call
         ensembleCode.appendBlockCode(new StringBuilder("\n"));
@@ -74,8 +73,11 @@ public class PolicyCodePart implements CodePart {
      */
     private String getExpression(final String categoryClassName, final AttributeExtractor extractor) {
         final StringBuilder extractionResult = extractor.extract();
+        final String mapping = categoryClassName.equals(ScalaHelper.KEYWORD_RESOURCE) 
+                ? ".map[" + ScalaHelper.KEYWORD_RESOURCE + "](x => x.getClass().cast(x))"
+                : ".map[" + ScalaHelper.KEYWORD_SUBJECT + "](x => x.getClass().cast(x))"; 
         return COMPONENTS + ".select[" + categoryClassName + "]." + "filter(" + AttributeExtractor.VAR_NAME + " => "
-                + (extractionResult.length() == 0 ? "true" : extractionResult) + ")" + MAPPING;
+                + (extractionResult.length() == 0 ? "true" : extractionResult) + ")" + mapping;
     }
 
     /**

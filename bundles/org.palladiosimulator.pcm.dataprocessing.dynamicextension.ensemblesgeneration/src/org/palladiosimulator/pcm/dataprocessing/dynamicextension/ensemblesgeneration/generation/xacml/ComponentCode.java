@@ -20,6 +20,8 @@ import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgenera
 public class ComponentCode implements ScalaCode {
     public static final String SUBJECT_CLASS_NAME = ScalaHelper.KEYWORD_SUBJECT;
     public static final String RESOURCE_CLASS_NAME = ScalaHelper.KEYWORD_RESOURCE;
+    
+    protected static final String ACCESS_SUBJECT = "accessSubject";
 
     private final Set<Attribute> existingAttributes;
 
@@ -78,6 +80,12 @@ public class ComponentCode implements ScalaCode {
         final List<ValueDeclaration> attributes = new ArrayList<>();
         if (categoryScalaName != null) {
             attributes.add(new ValueDeclaration(categoryScalaName, ScalaHelper.KEYWORD_STRING, isOptional));
+        }
+        
+        if (category == Category.RESOURCE) {
+            // adding access subject
+            final var subject = new ValueDeclaration(ACCESS_SUBJECT, SUBJECT_CLASS_NAME, false);
+            attributes.add(subject);
         }
 
         for (final Attribute attribute : Attribute.getCategoryAttributes(category)) {
