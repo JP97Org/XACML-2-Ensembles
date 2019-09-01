@@ -1,6 +1,9 @@
 package org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation;
 
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ScalaClass;
+
+import java.util.Objects;
+
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.Call;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ScalaBlock;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ValueInitialisation;
@@ -18,12 +21,11 @@ import oasis.names.tc.xacml._3_0.core.schema.wd_17.PolicyType;
  * @version 1.0
  */
 public class PolicyCodePart implements CodePart {
-    private static final String POLICY_PREFIX = "policy:";
+    private static final String POLICY_PREFIX = ScalaHelper.POLICY_PREFIX;
 
-    protected static final String COMPONENTS = "components";
-    protected static final String SUBJECT_FIELD_NAME = "allowedSubjects";
-    public static final String RESOURCE_FIELD_NAME = "allowedResources";
-    protected static final String SITUATION = "situation";
+    private static final String COMPONENTS = ScalaHelper.COMPONENTS;
+    private static final String SUBJECT_FIELD_NAME = ScalaHelper.SUBJECT_FIELD_NAME;
+    private static final String RESOURCE_FIELD_NAME = ScalaHelper.RESOURCE_FIELD_NAME;
     
     private final PolicyType policy;
 
@@ -35,8 +37,8 @@ public class PolicyCodePart implements CodePart {
      * @param policy - the given policy
      */
     public PolicyCodePart(final PolicyType policy) {
-        this.policy = policy;
-        this.actionName = this.policy.getPolicyId().replaceFirst(POLICY_PREFIX, "");
+        this.policy = Objects.requireNonNull(policy);
+        this.actionName = Objects.requireNonNull(this.policy.getPolicyId()).replaceFirst(POLICY_PREFIX, "");
     }
 
     @Override
@@ -72,12 +74,13 @@ public class PolicyCodePart implements CodePart {
      * @return the expression which checks the attributes of the category
      */
     private String getExpression(final String categoryClassName, final AttributeExtractor extractor) {
-        final StringBuilder extractionResult = extractor.extract();
-        final String mapping = categoryClassName.equals(ScalaHelper.KEYWORD_RESOURCE) 
-                ? ".map[" + ScalaHelper.KEYWORD_RESOURCE + "](x => x.getClass().cast(x))"
-                : ".map[" + ScalaHelper.KEYWORD_SUBJECT + "](x => x.getClass().cast(x))"; 
-        return COMPONENTS + ".select[" + categoryClassName + "]." + "filter(" + AttributeExtractor.VAR_NAME + " => "
-                + (extractionResult.length() == 0 ? "true" : extractionResult) + ")" + mapping;
+        final String extractionResult = extractor.extract().toString();
+        final String filterChecks = extractionResult.length() == 0 ? "true" : extractionResult;
+        final String map = ".map[%s]%s";
+        final String cast = "(x => x.getClass().cast(x))";
+        final String mapping = String.format(map, categoryClassName, cast);
+        return String.format("%s.select[%s].filter(%s => %s)%s", 
+                COMPONENTS, categoryClassName, ScalaHelper.VAR_NAME, filterChecks, mapping);
     }
 
     /**

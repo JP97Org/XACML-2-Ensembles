@@ -19,12 +19,12 @@ import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgenera
 import oasis.names.tc.xacml._3_0.core.schema.wd_17.PolicySetType;
 
 /**
- * The SampleHandler is the main class for the plugin from which the generation is started.
+ * The MainHandler is the main class for the plugin from which the generation is started.
  * 
  * @author Jonathan Schenkenberger
  * @version 1.0
  */
-public class SampleHandler extends AbstractHandler {
+public class MainHandler extends AbstractHandler {
     // SETTINGS ////////////////////////////////////////////////////////////////////////////////
     private static final String PATH_PREFIX = "/home/jojo/Schreibtisch/KIT/Bachelorarbeit/";
     private static final String DIR_POLICYSETS = "out/";
@@ -40,77 +40,7 @@ public class SampleHandler extends AbstractHandler {
     private static final String PATH_SCALA_OUTPUT = PATH_PREFIX + DIR_SCALA_OUTPUT + FILENAME_SCALA_OUTPUT;
 
     public static final Logger LOGGER = IS_ECLIPSE_LOGGING ? PlatformUI.getWorkbench().getService(Logger.class)
-            : new Logger() {
-        @Override
-        public boolean isErrorEnabled() {
-            return false;
-        }
-
-        @Override
-        public void error(Throwable t, String message) {
-            error(message);
-        }
-        
-        @Override
-        public void error(String message) {
-            System.err.println("ERROR | " + message);
-        }
-
-        @Override
-        public boolean isWarnEnabled() {
-            return false;
-        }
-
-        @Override
-        public void warn(Throwable t, String message) {
-            warn(message);
-        }
-        
-        @Override
-        public void warn(String message) {
-            System.err.println("WARN | " + message);
-        }
-
-        @Override
-        public boolean isInfoEnabled() {
-            return false;
-        }
-
-        @Override
-        public void info(Throwable t, String message) {
-           info(message);
-        }
-        
-        @Override
-        public void info(String message) {
-            System.err.println("INFO | " + message);
-        }
-
-        @Override
-        public boolean isTraceEnabled() {
-            return false;
-        }
-
-        @Override
-        public void trace(Throwable t, String message) {
-            trace(message);
-        }
-
-        @Override
-        public boolean isDebugEnabled() {
-            return false;
-        }
-
-        @Override
-        public void debug(Throwable t) {
-            debug(t.getMessage());
-        }
-
-        @Override
-        public void debug(Throwable t, String message) {
-            debug(message);
-        }
-};
+            : new MockLogger();
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {

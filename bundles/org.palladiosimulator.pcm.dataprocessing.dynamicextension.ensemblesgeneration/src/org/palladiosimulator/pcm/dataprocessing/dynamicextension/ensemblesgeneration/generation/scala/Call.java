@@ -1,6 +1,7 @@
 package org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Represents a scala method call.
@@ -21,8 +22,8 @@ public class Call implements ScalaCode {
      *            - the call content (the argument(s) of the method call)
      */
     public Call(final String name, final String callContent) {
-        this.name = name;
-        this.callContent = callContent;
+        this.name = Objects.requireNonNull(name);
+        this.callContent = Objects.requireNonNull(callContent);
     }
 
     /**
@@ -35,7 +36,8 @@ public class Call implements ScalaCode {
      *            - the given arguments
      */
     public Call(final String name, final List<ValueDeclaration> arguments) {
-        this.name = name;
+        this.name = Objects.requireNonNull(name);
+        Objects.requireNonNull(arguments);
         if (!arguments.isEmpty()) {
             final StringBuilder builder = new StringBuilder();
             for (var val : arguments) {

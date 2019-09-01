@@ -26,7 +26,7 @@ public class ValueDeclaration implements ScalaCode {
      */
     public ValueDeclaration(final String name, final String type) {
         this.name = ScalaHelper.createIdentifier(name);
-        this.type = type;
+        this.type = Objects.requireNonNull(type);
         this.isOptional = false;
     }
 
@@ -42,8 +42,8 @@ public class ValueDeclaration implements ScalaCode {
      *            - whether the attribute setting is optional
      */
     public ValueDeclaration(final String name, final String type, final boolean isOptional) {
-        this.name = name;
-        this.type = type;
+        this.name = ScalaHelper.createIdentifier(name);
+        this.type = Objects.requireNonNull(type);
         this.isOptional = isOptional;
     }
 

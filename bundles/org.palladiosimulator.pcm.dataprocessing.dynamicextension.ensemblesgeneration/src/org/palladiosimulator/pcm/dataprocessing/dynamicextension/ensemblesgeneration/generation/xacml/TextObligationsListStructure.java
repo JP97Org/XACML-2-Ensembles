@@ -2,6 +2,7 @@ package org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgener
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import oasis.names.tc.xacml._3_0.core.schema.wd_17.ObligationExpressionsType;
@@ -12,20 +13,21 @@ import oasis.names.tc.xacml._3_0.core.schema.wd_17.ObligationExpressionsType;
  * @author Jonathan Schenkenberger
  * @version 1.0
  */
-public class TextObligationsStructure implements ObligationsStructure {
+public class TextObligationsListStructure implements ObligationsListStructure {
     private final List<TextObligationStructure> obligations;
     
     /**
-     * Creates a new text obligations structure with the given XACML obligations expression type
+     * Creates a new text obligations list structure with the given XACML obligations expression type
      * which must all be text obligations.
      * 
      * @param obligations - the XACML obligations expression type.
      */
-    public TextObligationsStructure(final ObligationExpressionsType obligations) {
-        // creating the obligation structure wrappers for the calls in subjects
-        this.obligations = obligations != null ? obligations.getObligationExpression()
-                .stream().map(x -> new TextObligationStructure(x, true)).collect(Collectors.toList()) : null;
-        if (this.obligations != null) {
+    public TextObligationsListStructure(final ObligationExpressionsType obligations) {
+        if (obligations != null) {
+            // creating the obligation structure wrappers for the calls in subjects
+            this.obligations = obligations.getObligationExpression()
+                    .stream().map(x -> new TextObligationStructure(x, true)).collect(Collectors.toList());
+            
             // creating the extension method calls in resources (only the obligations which are at end)
             final List<TextObligationStructure> resourceObligations = obligations.getObligationExpression()
                     .stream()
@@ -33,11 +35,14 @@ public class TextObligationsStructure implements ObligationsStructure {
                     .filter(x -> x.isAtEnd())
                     .collect(Collectors.toList());
             this.obligations.addAll(resourceObligations);
+        } else {
+            this.obligations = null;
         }
     }
 
     @Override
     public List<ObligationStructure> getObligations(final Category category) {
+        Objects.requireNonNull(category);
         if (this.obligations == null || category == Category.ENVIRONMENT) {
             // no obligations or environment category --> no obligations to be added
             return new ArrayList<>();

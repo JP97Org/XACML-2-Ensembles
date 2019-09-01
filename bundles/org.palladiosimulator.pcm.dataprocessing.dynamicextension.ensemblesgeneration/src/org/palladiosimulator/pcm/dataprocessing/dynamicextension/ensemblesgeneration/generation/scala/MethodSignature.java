@@ -1,6 +1,7 @@
 package org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.util.ScalaHelper;
 
@@ -20,11 +21,13 @@ public class MethodSignature implements ScalaCode {
      * @param name
      *            - the given method name
      * @param arguments
-     *            - the given arguments
+     *            - the given arguments or null if none
      * @param type
      *            - the return type of the method
      */
     public MethodSignature(final String name, final List<ValueDeclaration> arguments, final String type) {
+        Objects.requireNonNull(name);
+        Objects.requireNonNull(type);
         this.methodSignature = new StringBuilder(ScalaHelper.KEYWORD_DEF).append(" ")
                 .append(ScalaHelper.createIdentifier(name)).append("(");
         if (arguments != null && !arguments.isEmpty()) {

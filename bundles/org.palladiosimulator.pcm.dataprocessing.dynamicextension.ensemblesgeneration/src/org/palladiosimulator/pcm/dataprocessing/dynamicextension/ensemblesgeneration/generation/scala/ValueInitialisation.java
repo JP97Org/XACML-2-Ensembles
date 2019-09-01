@@ -1,5 +1,7 @@
 package org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala;
 
+import java.util.Objects;
+
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.util.ScalaHelper;
 
 /**
@@ -22,7 +24,7 @@ public class ValueInitialisation implements ScalaCode {
      */
     public ValueInitialisation(final String name, final String expression) {
         this.name = ScalaHelper.createIdentifier(name);
-        this.expression = expression;
+        this.expression = Objects.requireNonNull(expression);
     }
 
     @Override

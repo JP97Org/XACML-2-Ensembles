@@ -8,7 +8,7 @@ import java.util.List;
  * @author Jonathan Schenkenberger
  * @version 1.0
  */
-public interface ObligationsStructure {
+public interface ObligationsListStructure {
     
     /**
      * Gets a list of obligation structures concerning the given category.

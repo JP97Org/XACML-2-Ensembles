@@ -11,7 +11,7 @@ import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgenera
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.MethodSignature;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ScalaBlock;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ValueDeclaration;
-import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.handlers.SampleHandler;
+import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.handlers.MainHandler;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.util.ScalaHelper;
 
 import oasis.names.tc.xacml._3_0.core.schema.wd_17.AttributeAssignmentExpressionType;
@@ -25,12 +25,12 @@ import oasis.names.tc.xacml._3_0.core.schema.wd_17.ObligationExpressionType;
  * @version 1.0
  */
 public class TextObligationStructure implements ObligationStructure {
-    private static final String ID_OBLIGATION_PREREQUISITE = "obligation:prerequisite";
-    private static final String PREFIX_PREREQUISITE = "prereq_";
+    private static final String ID_OBLIGATION_PREREQUISITE = ScalaHelper.ID_OBLIGATION_PREREQUISITE;
+    private static final String PREFIX_PREREQUISITE = ScalaHelper.PREFIX_PREREQUISITE;
 
-    private static final String ID_IS_END = "context:extension:isend";
+    private static final String ID_IS_END = ScalaHelper.ID_IS_END;
 
-    private static final String RETURN = "return true";
+    private static final String RETURN = ScalaHelper.RETURN_TRUE;
 
     private final boolean isPrerequisite;
     private final String methodName;
@@ -48,14 +48,15 @@ public class TextObligationStructure implements ObligationStructure {
      *            resources
      */
     public TextObligationStructure(final ObligationExpressionType obligation, final boolean isCalledInSubjects) {
-        final String obligationId = obligation.getObligationId();
+        Objects.requireNonNull(obligation);
+        final String obligationId = Objects.requireNonNull(obligation.getObligationId());
         this.isPrerequisite = obligationId.equals(ID_OBLIGATION_PREREQUISITE);
-        final var list = obligation.getAttributeAssignmentExpression();
+        final var list = Objects.requireNonNull(obligation.getAttributeAssignmentExpression());
 
         final var valuesList = getValues(Arrays.asList(list.get(0)), null).collect(Collectors.toList());
         if (valuesList.isEmpty()) {
             final var error = "illegal text obligation structure in obligation \"" + obligationId + "\"";
-            SampleHandler.LOGGER.error(error);
+            MainHandler.LOGGER.error(error);
             throw new IllegalStateException(error);
         }
         // extracting the text which is always at position 0
@@ -87,7 +88,7 @@ public class TextObligationStructure implements ObligationStructure {
 
     @Override
     public Call getMethodCall(final String callContent) {
-        return new Call(this.methodName, callContent);
+        return new Call(this.methodName, Objects.requireNonNull(callContent));
     }
 
     @Override
@@ -151,6 +152,7 @@ public class TextObligationStructure implements ObligationStructure {
 
     @Override
     public int compareTo(ObligationStructure other) {
+        Objects.requireNonNull(other);
         final int ret = this.methodName.compareTo(other.getMethodCall("").getName());
         if (ret == 0 && getClass().equals(other.getClass())) {
             return Boolean.valueOf(this.isCalledInSubjects)

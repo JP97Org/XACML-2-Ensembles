@@ -1,5 +1,7 @@
 package org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala;
 
+import java.util.Objects;
+
 /**
  * Represents a scala block with a {@code StringBuilder} definition of pre-block code, a
  * {@code StringBuilder} definition of block code (inside {}) and an optional next block which is
@@ -29,6 +31,7 @@ public class ScalaBlock implements ScalaCode {
      *            - the given code definition
      */
     public void appendPreBlockCode(final StringBuilder code) {
+        Objects.requireNonNull(code);
         this.preBlockCode.append(code);
     }
 
@@ -39,6 +42,7 @@ public class ScalaBlock implements ScalaCode {
      *            - the given code as an instance of a {@code ScalaCode} type
      */
     public void appendPreBlockCode(final ScalaCode code) {
+        Objects.requireNonNull(code);
         appendPreBlockCode(code.getCodeDefinition());
     }
 
@@ -49,6 +53,7 @@ public class ScalaBlock implements ScalaCode {
      *            - the given code definition
      */
     public void appendBlockCode(final StringBuilder code) {
+        Objects.requireNonNull(code);
         this.blockCode.append(code);
     }
 
@@ -59,6 +64,7 @@ public class ScalaBlock implements ScalaCode {
      *            - the given code as an instance of a {@code ScalaCode} type
      */
     public void appendBlockCode(final ScalaCode code) {
+        Objects.requireNonNull(code);
         appendBlockCode(code.getCodeDefinition());
     }
 

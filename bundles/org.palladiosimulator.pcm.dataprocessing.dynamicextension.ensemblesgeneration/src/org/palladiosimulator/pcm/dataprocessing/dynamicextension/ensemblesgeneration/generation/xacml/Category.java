@@ -1,5 +1,7 @@
 package org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.xacml;
 
+import java.util.Objects;
+
 import com.att.research.xacml.api.XACML3;
 
 /**
@@ -23,7 +25,7 @@ public enum Category {
      *          - XACML category id
      */
     private Category(final String categoryId) {
-        this.categoryId = categoryId;
+        this.categoryId = Objects.requireNonNull(categoryId);
     }
 
     /**

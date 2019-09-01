@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -19,7 +20,7 @@ import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgenera
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.xacml.Category;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.xacml.ComponentCode;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.xacml.ObligationStructure;
-import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.handlers.SampleHandler;
+import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.handlers.MainHandler;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.util.ScalaHelper;
 
 import oasis.names.tc.xacml._3_0.core.schema.wd_17.PolicySetType;
@@ -32,15 +33,13 @@ import oasis.names.tc.xacml._3_0.core.schema.wd_17.PolicyType;
  * @version 1.0
  */
 public class PolicySetHandler implements CodePart {
-    private static final String MODEL_CLASS_NAME = "RunningExample";
-    private static final ValueDeclaration NOW = new ValueDeclaration(ScalaHelper.KEYWORD_NOW, ScalaHelper.KEYWORD_TIME);
-    private static final String PACKAGE = "package scenarios";
-    private static final StringBuilder IMPORTS = new StringBuilder("import tcof.{Component, _}\n")
-            .append("import java.time._\n").append("import java.time.format._\n")
-            .append("import java.util.Collection\n").append("import java.util.ArrayList\n");
-    private static final String SYSTEM = "System";
-    private static final String ROOT_ENSEMBLE_NAME = "rootEnsemble";
-    private static final String RULE_SUFFIX = "Rule";
+    private static final String MODEL_CLASS_NAME = ScalaHelper.MODEL_CLASS_NAME;
+    private static final ValueDeclaration NOW = ScalaHelper.NOW;
+    private static final String PACKAGE = ScalaHelper.PACKAGE;
+    private static final StringBuilder IMPORTS = ScalaHelper.IMPORTS;
+    private static final String SYSTEM = ScalaHelper.SYSTEM;
+    private static final String ROOT_ENSEMBLE_NAME = ScalaHelper.ROOT_ENSEMBLE_NAME;
+    private static final String RULE_SUFFIX = ScalaHelper.RULE_SUFFIX;
 
     private final PolicySetType policySet;
     private final String mainCode;
@@ -54,7 +53,7 @@ public class PolicySetHandler implements CodePart {
      *            - the code contained in the main method or null (if standard code)
      */
     public PolicySetHandler(final PolicySetType policySet, final String mainCode) {
-        this.policySet = policySet;
+        this.policySet = Objects.requireNonNull(policySet);
         this.mainCode = mainCode;
     }
 
@@ -111,8 +110,8 @@ public class PolicySetHandler implements CodePart {
         for (final PolicyType policy : policies) {
             for (final Category category : Category.values()) {
                 final var extractor = new AttributeExtractor(policy, category);
-                existingAttributes.addAll(extractor.extractExisitingAttributes());
-                obligations.addAll(extractor.extractExisitingObligations());
+                existingAttributes.addAll(extractor.extractAttributes());
+                obligations.addAll(extractor.extractObligations());
             }
         }
         code.appendBlockCode(new ComponentCode(existingAttributes));
@@ -131,7 +130,7 @@ public class PolicySetHandler implements CodePart {
                 policies.add((PolicyType) (jaxbObject.getValue()));
             } else {
                 final String error = "illegal type, only policies are supported!";
-                SampleHandler.LOGGER.error(error);
+                MainHandler.LOGGER.error(error);
                 throw new IllegalStateException(error);
             }
         }

@@ -2,6 +2,7 @@ package org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgener
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.Call;
@@ -21,7 +22,7 @@ public class ComponentCode implements ScalaCode {
     public static final String SUBJECT_CLASS_NAME = ScalaHelper.KEYWORD_SUBJECT;
     public static final String RESOURCE_CLASS_NAME = ScalaHelper.KEYWORD_RESOURCE;
     
-    protected static final String ACCESS_SUBJECT = "accessSubject";
+    private static final String ACCESS_SUBJECT = ScalaHelper.ACCESS_SUBJECT;
 
     private final Set<Attribute> existingAttributes;
 
@@ -32,7 +33,7 @@ public class ComponentCode implements ScalaCode {
      *          - the given existing attributes in a set
      */
     public ComponentCode(final Set<Attribute> existingAttributes) {
-        this.existingAttributes = existingAttributes;
+        this.existingAttributes = Objects.requireNonNull(existingAttributes);
     }
 
     @Override

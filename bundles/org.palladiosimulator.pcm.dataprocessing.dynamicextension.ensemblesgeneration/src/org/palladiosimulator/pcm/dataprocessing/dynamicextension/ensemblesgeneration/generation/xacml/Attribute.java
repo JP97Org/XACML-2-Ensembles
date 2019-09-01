@@ -1,6 +1,7 @@
 package org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.xacml;
 
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -55,10 +56,10 @@ public enum Attribute {
      */
     private Attribute(final Category attributeCategory, final String attributeId, final String scalaAttributeName,
             final Function function) {
-        this.attributeCategory = attributeCategory;
-        this.attributeId = attributeId;
-        this.scalaAttributeName = scalaAttributeName;
-        this.function = function;
+        this.attributeCategory = Objects.requireNonNull(attributeCategory);
+        this.attributeId = Objects.requireNonNull(attributeId);
+        this.scalaAttributeName = Objects.requireNonNull(scalaAttributeName);
+        this.function = Objects.requireNonNull(function);
     }
 
     /**
@@ -114,7 +115,7 @@ public enum Attribute {
      * @return the check code for the given value
      */
     protected StringBuilder getCheckCode(final String value) {
-        return this.function.getCheckCode(this.scalaAttributeName, value);
+        return this.function.getCheckCode(this.scalaAttributeName, Objects.requireNonNull(value));
     }
 
     /**
@@ -125,6 +126,7 @@ public enum Attribute {
      * @return Gets a sorted set of all attributes concerning the given category
      */
     public static SortedSet<Attribute> getCategoryAttributes(final Category category) {
+        Objects.requireNonNull(category);
         final var set = new TreeSet<Attribute>(getAlphabeticComparator());
 
         for (final Attribute attribute : values()) {
@@ -166,6 +168,8 @@ public enum Attribute {
      * @return the attribute defined by the attribute id and the match function or null if none found
      */
     public static Attribute of(final String attributeId, final Function function) {
+        Objects.requireNonNull(attributeId);
+        Objects.requireNonNull(function);
         for (final Attribute attribute : values()) {
             if (attribute.getAttributeId().equals(attributeId) && attribute.getFunction().equals(function)) {
                 return attribute;

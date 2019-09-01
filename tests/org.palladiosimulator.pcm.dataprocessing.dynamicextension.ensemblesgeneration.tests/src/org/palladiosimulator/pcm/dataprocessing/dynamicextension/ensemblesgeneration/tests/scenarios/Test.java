@@ -24,13 +24,13 @@ public class Test {
     private static final String DIR_SCALA_OUTPUT = "models/ensembleTester/src/main/scala/scenarios/"; 
 
     //TODO: adapt to test case
-    private static final String FILENAME_POLICYSET = "UC-Running.xml"; // "UC-Test.xml"; // "UC-Empty.xml"; // "UC3.xml"; // "UC-Combined.xml"; // "UC-Shift.xml"; // 
+    private static final String FILENAME_POLICYSET = "UC-Test.xml"; //"UC-Running.xml"; //  "UC-Empty.xml"; // "UC3.xml"; // "UC-Combined.xml"; // "UC-Shift.xml"; // 
     
     private static final String FILENAME_SCALA_OUTPUT = "out.scala";
     
     private static String getCode() {
         //TODO: adapt to test case, run once, refresh ScalaEnsembleTester, run again and check if result is as expected
-        return CODE_RUNNING_ALLOW; 
+        return CODE_TEST_ALLOW; 
     }
     ////////////////////////////////////////////////////////////////////////////////////////////
 
