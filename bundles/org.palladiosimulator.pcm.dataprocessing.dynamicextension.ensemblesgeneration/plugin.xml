@@ -6,25 +6,25 @@
          point="org.eclipse.ui.commands">
       <category
             id="org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.commands.category"
-            name="Sample Category">
+            name="Transform Category">
       </category>
       <command
             categoryId="org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.commands.category"
-            name="Sample Command"
-            id="org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.commands.sampleCommand">
+            name="Transform Command"
+            id="org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.commands.transformCommand">
       </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
       <handler
             class="org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.handlers.MainHandler"
-            commandId="org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.commands.sampleCommand">
+            commandId="org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.commands.transformCommand">
       </handler>
    </extension>
    <extension
          point="org.eclipse.ui.bindings">
       <key
-            commandId="org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.commands.sampleCommand"
+            commandId="org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.commands.transformCommand"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             contextId="org.eclipse.ui.contexts.window"
             sequence="M1+6">
@@ -35,12 +35,12 @@
       <menuContribution
             locationURI="menu:org.eclipse.ui.main.menu?after=additions">
          <menu
-               id="org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.menus.sampleMenu"
-               label="Sample Menu"
+               id="org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.menus.transformMenu"
+               label="Transform Menu"
                mnemonic="M">
             <command
-                  commandId="org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.commands.sampleCommand"
-                  id="org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.menus.sampleCommand"
+                  commandId="org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.commands.transformCommand"
+                  id="org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.menus.transformCommand"
                   mnemonic="S">
             </command>
          </menu>
@@ -48,15 +48,23 @@
       <menuContribution
             locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
          <toolbar
-               id="org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.toolbars.sampleToolbar">
+               id="org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.toolbars.transformToolbar">
             <command
-                  id="org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.toolbars.sampleCommand"
-                  commandId="org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.commands.sampleCommand"
+                  id="org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.toolbars.transformCommand"
+                  commandId="org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.commands.transformCommand"
                   icon="icons/sample.png"
-                  tooltip="Say hello world">
+                  tooltip="Transform XACML policy set files (intermediate model) instance 2 an Ensmeble system instance">
             </command>
          </toolbar>
       </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.handlers.PreferencesHandler"
+            id="org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.prefs"
+            name="Preferences of XACML-2-Ensembles transformation">
+      </page>
    </extension>
 
 </plugin>

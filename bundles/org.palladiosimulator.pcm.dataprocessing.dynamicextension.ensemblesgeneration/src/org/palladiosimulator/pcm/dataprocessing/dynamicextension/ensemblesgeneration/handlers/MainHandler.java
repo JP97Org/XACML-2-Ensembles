@@ -8,6 +8,7 @@ import java.nio.charset.Charset;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -25,29 +26,17 @@ import oasis.names.tc.xacml._3_0.core.schema.wd_17.PolicySetType;
  * @version 1.0
  */
 public class MainHandler extends AbstractHandler {
-    // SETTINGS ////////////////////////////////////////////////////////////////////////////////
-    private static final String PATH_PREFIX = "/home/jojo/Schreibtisch/KIT/Bachelorarbeit/";
-    private static final String DIR_POLICYSETS = "out/";
-    private static final String DIR_SCALA_OUTPUT = "models/ensembleTester/src/main/scala/scenarios/"; 
+    private static final boolean IS_ECLIPSE_RUNNING = Platform.isRunning();
 
-    private static final String FILENAME_POLICYSET = "UC-Test.xml"; // "UC-Shift.xml"; //
-    private static final String FILENAME_SCALA_OUTPUT = "out.scala";
-    
-    private static final boolean IS_ECLIPSE_LOGGING = false;
-    ////////////////////////////////////////////////////////////////////////////////////////////
-
-    private static final String PATH_POLICYSET = PATH_PREFIX + DIR_POLICYSETS + FILENAME_POLICYSET;
-    private static final String PATH_SCALA_OUTPUT = PATH_PREFIX + DIR_SCALA_OUTPUT + FILENAME_SCALA_OUTPUT;
-
-    public static final Logger LOGGER = IS_ECLIPSE_LOGGING ? PlatformUI.getWorkbench().getService(Logger.class)
+    public static final Logger LOGGER = IS_ECLIPSE_RUNNING ? PlatformUI.getWorkbench().getService(Logger.class)
             : new MockLogger();
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
-        LOGGER.info(IS_ECLIPSE_LOGGING ? "Using the eclipse logger" : "Using an eclipse logger mock-up");
+        LOGGER.info(IS_ECLIPSE_RUNNING ? "Using the eclipse logger" : "Using an eclipse logger mock-up");
 
         // loading xacml policy set
-        final PolicyLoader loader = new PolicyLoader(PATH_POLICYSET);
+        final PolicyLoader loader = new PolicyLoader(PreferencesHandler.getPolicySetPath());
         PolicySetType policySet = null;
         String error = null;
         try {
@@ -56,7 +45,7 @@ public class MainHandler extends AbstractHandler {
             e1.printStackTrace();
             error = e1.getMessage();
         }
-        String path = null;
+        final String path = PreferencesHandler.getOutputPath();
         if (error == null) {
             LOGGER.info("loaded " + policySet.getDescription());
 
@@ -65,8 +54,6 @@ public class MainHandler extends AbstractHandler {
             final String code = handler.getCode().toString();
 
             // writing code
-            path = PATH_SCALA_OUTPUT;
-       
             try {
                 final var writer = new PrintWriter(new File(path), Charset.forName("UTF-8"));
                 writer.write(code);
