@@ -19,6 +19,7 @@ public class ScalaBlockTest {
     public void appendPreBlockCodeTestOne() {
         this.block.appendPreBlockCode(new StringBuilder("preBlock"));
         Assert.assertEquals("preBlock {\n\n}\n", this.block.getCodeDefinition().toString());
+        Assert.assertEquals("preBlock {\n\n}\n", this.block.getCodeDefinitionOfThisBlock().toString());
     }
     
     /**
@@ -33,6 +34,7 @@ public class ScalaBlockTest {
             }
         });
         Assert.assertEquals("preBlock {\n\n}\n", this.block.getCodeDefinition().toString());
+        Assert.assertEquals("preBlock {\n\n}\n", this.block.getCodeDefinitionOfThisBlock().toString());
     }
     
     /**
@@ -42,6 +44,7 @@ public class ScalaBlockTest {
     public void appendBlockCodeTestOne() {
         this.block.appendBlockCode(new StringBuilder("block"));
         Assert.assertEquals(" {\nblock\n}\n", this.block.getCodeDefinition().toString());
+        Assert.assertEquals(" {\nblock\n}\n", this.block.getCodeDefinitionOfThisBlock().toString());
     }
     
     /**
@@ -56,6 +59,7 @@ public class ScalaBlockTest {
             }
         });
         Assert.assertEquals(" {\nblock\n}\n", this.block.getCodeDefinition().toString());
+        Assert.assertEquals(" {\nblock\n}\n", this.block.getCodeDefinitionOfThisBlock().toString());
     }
     
     /**
@@ -64,7 +68,9 @@ public class ScalaBlockTest {
     @Test
     public void setNextTest() {
         this.block.setNext(new ScalaBlock());
+        Assert.assertTrue(this.block.iterator().next() != null);
         Assert.assertEquals(" {\n\n}\n {\n\n}\n", this.block.getCodeDefinition().toString());
+        Assert.assertEquals(" {\n\n}\n", this.block.getCodeDefinitionOfThisBlock().toString());
     }
     
     /**

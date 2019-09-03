@@ -1,6 +1,7 @@
 package org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.tests.scenarios;
 
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.PolicySetHandler;
+import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ScalaBlock;
 
 import java.io.File;
 import java.io.IOException;
@@ -279,14 +280,16 @@ public class Test {
             e1.printStackTrace();
             return;
         }
-        final String code = handler.getCode().getCodeDefinition().toString();
+        final ScalaBlock scalaBlock = handler.getCode();
         
         // writing code
         final String path = PATH_SCALA_OUTPUT;
         String error = null;
         try {
             final var writer = new PrintWriter(new File(path), Charset.forName("UTF-8"));
-            writer.write(code);
+            for (final StringBuilder code : scalaBlock) {
+                writer.write(code.toString());
+            }
             writer.close();
         } catch (IOException e) {
             error = e.getMessage();

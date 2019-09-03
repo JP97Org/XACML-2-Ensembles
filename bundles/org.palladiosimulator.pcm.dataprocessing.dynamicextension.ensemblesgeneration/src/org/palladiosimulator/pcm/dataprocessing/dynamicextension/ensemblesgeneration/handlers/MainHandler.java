@@ -16,6 +16,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.MainLoader.PolicyLoader;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.PolicySetHandler;
+import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala.ScalaBlock;
 
 import oasis.names.tc.xacml._3_0.core.schema.wd_17.PolicySetType;
 
@@ -51,12 +52,14 @@ public class MainHandler extends AbstractHandler {
 
             // generating code
             final PolicySetHandler handler = new PolicySetHandler(policySet, null);
-            final String code = handler.getCode().toString();
+            final ScalaBlock scalaBlock = handler.getCode();
 
             // writing code
             try {
                 final var writer = new PrintWriter(new File(path), Charset.forName("UTF-8"));
-                writer.write(code);
+                for (final StringBuilder code : scalaBlock) {
+                    writer.write(code.toString());
+                }
                 writer.close();
             } catch (IOException e) {
                 error = e.getMessage();

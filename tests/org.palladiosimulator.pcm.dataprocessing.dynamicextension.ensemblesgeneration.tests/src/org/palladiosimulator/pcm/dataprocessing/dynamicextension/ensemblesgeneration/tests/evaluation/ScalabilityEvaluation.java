@@ -89,7 +89,9 @@ public class ScalabilityEvaluation {
             final String path = PATH_OUT_DIR + name + (isOr ? "OR" : "AND") + copyNum + ".scala";
             System.out.println("printing to " + path + " ...");
             final var writer = new PrintWriter(new File(path), Charset.forName("UTF-8"));
-            writer.write(toPrint.getCodeDefinition().toString());
+            for (final var block : toPrint) {
+                writer.write(block.toString());
+            }
             writer.close();
             System.out.println("printing done.");
         }

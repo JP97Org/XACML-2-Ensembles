@@ -1,5 +1,6 @@
 package org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.scala;
 
+import java.util.Iterator;
 import java.util.Objects;
 
 /**
@@ -10,7 +11,7 @@ import java.util.Objects;
  * @author Jonathan Schenkenberger
  * @version 1.0
  */
-public class ScalaBlock implements ScalaCode {
+public class ScalaBlock implements ScalaCode, Iterable<StringBuilder> {
     private final StringBuilder preBlockCode;
     private final StringBuilder blockCode;
     private ScalaBlock next;
@@ -77,14 +78,46 @@ public class ScalaBlock implements ScalaCode {
     public void setNext(final ScalaBlock next) {
         this.next = next;
     }
-
+    
     @Override
-    public StringBuilder getCodeDefinition() {
+    public Iterator<StringBuilder> iterator() {
+        final ScalaBlock thisBlock = this;
+        return new Iterator<StringBuilder>() {
+            private ScalaBlock now = thisBlock;
+            
+            @Override
+            public boolean hasNext() {
+                return this.now != null;
+            }
+
+            @Override
+            public StringBuilder next() {
+                if (hasNext()) {
+                    final StringBuilder before = this.now.getCodeDefinitionOfThisBlock();
+                    this.now = this.now.next;
+                    return before;
+                }
+                return null;
+            }
+        };
+    }
+    
+    /**
+     * Gets the code definition of only this block. This method can be used to allow blockwise writing. 
+     * 
+     * @return the code definition of only this block
+     */
+    public StringBuilder getCodeDefinitionOfThisBlock() {
         final StringBuilder builder = new StringBuilder();
         return builder.append(this.preBlockCode)
                 .append(" {\n")
                 .append(this.blockCode)
-                .append("\n}\n")
+                .append("\n}\n");
+    }
+
+    @Override
+    public StringBuilder getCodeDefinition() {
+        return getCodeDefinitionOfThisBlock()
                 .append(this.next == null ? "" : this.next.getCodeDefinition());
     }
 
