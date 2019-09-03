@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
+import java.nio.file.Paths;
 
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.MainLoader.PolicyLoader;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.PolicySetHandler;
@@ -19,7 +20,8 @@ import oasis.names.tc.xacml._3_0.core.schema.wd_17.PolicySetType;
  */
 public class ScalabilityEvaluation {
     // SETTINGS ////////////////////////////////////////////////////////////////////////////////
-    private static final String PATH_PREFIX = "/home/jojo/Schreibtisch/KIT/Bachelorarbeit/";
+    // base path is the org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.tests folder inside the tests folder in the XACML-2-Ensembles git
+    private static final String RELATIVE_PATH_PREFIX = Paths.get("../../../../").toAbsolutePath().toString() + "/";;
     private static final String DIR_POLICYSETS = "out/";
     private static final String DIR_SCALA_OUTPUT = "out/scalaEval/"; 
     
@@ -27,8 +29,8 @@ public class ScalabilityEvaluation {
     private static final boolean IS_PRINTING = false;
     ////////////////////////////////////////////////////////////////////////////////////////////
     
-    private static final String PATH_IN_DIR = PATH_PREFIX + DIR_POLICYSETS;
-    private static final String PATH_OUT_DIR = PATH_PREFIX + DIR_SCALA_OUTPUT;
+    private static final String PATH_IN_DIR = RELATIVE_PATH_PREFIX + DIR_POLICYSETS;
+    private static final String PATH_OUT_DIR = RELATIVE_PATH_PREFIX + DIR_SCALA_OUTPUT;
     
     private static final int ONE = 1;
     private static final int TEN = 10;

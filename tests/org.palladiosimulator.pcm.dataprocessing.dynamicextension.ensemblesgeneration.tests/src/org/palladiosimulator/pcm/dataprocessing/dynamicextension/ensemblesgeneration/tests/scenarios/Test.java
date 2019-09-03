@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
+import java.nio.file.Paths;
 
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.MainLoader.PolicyLoader;
 
@@ -20,9 +21,9 @@ import scenarios.RunningExample;
  */
 public class Test {
     // SETTINGS ////////////////////////////////////////////////////////////////////////////////
-    private static final String PATH_PREFIX = "/home/jojo/Schreibtisch/KIT/Bachelorarbeit/";
-    private static final String DIR_POLICYSETS = "out/";
-    private static final String DIR_SCALA_OUTPUT = "models/ensembleTester/src/main/scala/scenarios/"; 
+    // base path is the org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.tests folder inside the tests folder in the XACML-2-Ensembles git
+    private static final String RELATIVE_PATH_IN = Paths.get("../../../../out/").toAbsolutePath().toString() + "/";
+    private static final String RELATIVE_PATH_OUT = Paths.get("../../../ensembleTester/src/main/scala/scenarios/").toAbsolutePath().toString() + "/"; 
 
     //TODO: adapt to test case
     private static final String FILENAME_POLICYSET = "UC-Test.xml"; //"UC-Running.xml"; //  "UC-Empty.xml"; // "UC3.xml"; // "UC-Combined.xml"; // "UC-Shift.xml"; // 
@@ -35,8 +36,8 @@ public class Test {
     }
     ////////////////////////////////////////////////////////////////////////////////////////////
 
-    private static final String PATH_POLICYSET = PATH_PREFIX + DIR_POLICYSETS + FILENAME_POLICYSET;
-    private static final String PATH_SCALA_OUTPUT = PATH_PREFIX + DIR_SCALA_OUTPUT + FILENAME_SCALA_OUTPUT;
+    private static final String PATH_POLICYSET_INPUT = RELATIVE_PATH_IN + FILENAME_POLICYSET;
+    private static final String PATH_SCALA_OUTPUT = RELATIVE_PATH_OUT + FILENAME_SCALA_OUTPUT;
     
     // CODES ///////////////////////////////////////////////////////////////////////////////////
     private static final String CODE_RUNNING_ALLOW = "//TODO: adapt to your usecase scenario\n" + 
@@ -268,7 +269,7 @@ public class Test {
     
 	public static void main(String[] args) {
 	    //TODO: see above in settings
-	    runTest(PATH_POLICYSET, getCode());
+	    runTest(PATH_POLICYSET_INPUT, getCode());
 	}
 	
 	public static void runTest(final String pathPolicySet, final String codeMain) {
