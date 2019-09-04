@@ -5,6 +5,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.MainLoader.PolicyLoader;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.generation.PolicySetHandler;
@@ -44,19 +48,53 @@ public class ScalabilityEvaluation {
 
     private static final int[] COPY_NUMS = { ONE, TEN, HUNDRED, THOUSAND, TEN_THOUSAND, HUNDRED_THOUSAND};
 
+    private static final Map<Pair<String, Integer>, List<Long>> RESULTS_OR = new HashMap<>();
+    private static final Map<Pair<String, Integer>, List<Long>> RESULTS_AND = new HashMap<>();
+    private static final int NUM_WARM_UP = 1;
+    private static final int NUM_REPETITIONS = 10;
+    
+    static {
+        for (final String uc : BASE_MODELS) {
+            for (final int copyNum : COPY_NUMS) {
+                final var pair = new Pair<>(uc, copyNum);
+                RESULTS_OR.put(pair, new ArrayList<>());
+                if (!uc.equals("UC-Test")) {
+                    RESULTS_AND.put(pair, new ArrayList<>());
+                }
+            }
+        }
+    }
+    
     // TODO run with at least -Xmx8g
     public static void main(String[] args) {
-        try {
-            System.out.println("OR\n---------------------------------------------------------------\n");
-            test(true);
-            System.out.println("AND\n---------------------------------------------------------------\n");
-            test(false);
-        } catch(IOException e) {
-            e.printStackTrace();
+        for (int i = 0; i < NUM_WARM_UP + NUM_REPETITIONS; i++) {
+            final int index = i - NUM_WARM_UP;
+            final boolean isWarmUp = index < 0;
+            try {
+                System.out.println("index= " + index + "\nOR\n---------------------------------------------------------------\n");
+                test(true, isWarmUp);
+                System.out.println("AND\n---------------------------------------------------------------\n");
+                test(false, isWarmUp);
+            } catch(IOException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        System.out.println("\n\n");
+        for (final String uc : BASE_MODELS) {
+            for (final int copyNum : COPY_NUMS) {
+                final var pair = new Pair<>(uc, copyNum);
+                final var orList = RESULTS_OR.get(pair);
+                System.out.println(pair + " OR: average= " + orList.stream().mapToLong(x -> x).average() + " | " + orList);
+                if (!uc.equals("UC-Test")) {
+                    final var andList = RESULTS_AND.get(pair);
+                    System.out.println(pair + " AND: average= " + andList.stream().mapToLong(x -> x).average() + " | " + andList);
+                }
+            }
         }
     }
 
-    private static final void test(boolean isOr) throws IOException {
+    private static final void test(boolean isOr, final boolean isWarmUp) throws IOException {
         for (final String uc : BASE_MODELS) {
             System.out.println(uc + "\n");
             for (final int copyNum : COPY_NUMS) {
@@ -65,8 +103,16 @@ public class ScalabilityEvaluation {
                 final var policySet = loadPolicySet(uc, isOr, copyNum);
                 final var code = new PolicySetHandler(policySet, null).getCode();
                 final long after = System.currentTimeMillis();
-                System.out.println("time consumed = " + (after - before) + "ms\n");
+                final long time = after - before;
+                System.out.println("time consumed = " + time + "ms\n");
                 print(uc, code, isOr, copyNum);
+                if (!isWarmUp) {
+                    if (isOr) {
+                        RESULTS_OR.get(new Pair<>(uc, copyNum)).add(time);
+                    } else {
+                        RESULTS_AND.get(new Pair<>(uc, copyNum)).add(time);
+                    }
+                }
             }
             System.out.println("---------------------------------------------------------------\n");
             if (!isOr) {
