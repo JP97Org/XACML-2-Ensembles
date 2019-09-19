@@ -29,13 +29,13 @@ public class AccuracyEvaluation {
     private static final String RELATIVE_PATH_OUT = Paths.get("../../../ensembleTester/src/main/scala/scenarios/").toAbsolutePath().toString() + "/"; 
 
     //TODO: adapt to test case
-    private static final String FILENAME_POLICYSET = "UC3.xml"; // "UC2.xml"; // "UC1.xml"; // "UC0.xml"; //  "UC4.xml"; // "UC5.xml"; // "UC-Combined.xml"; // "UC-Running.xml"; //
+    private static final String FILENAME_POLICYSET = "UC-Combined.xml"; // "UC5.xml"; // "UC4.xml"; // "UC3.xml"; // "UC2.xml"; // "UC1.xml"; // "UC0.xml"; // "UC-Running.xml"; //
     
     private static final String FILENAME_SCALA_OUTPUT = "out.scala";
     
     private static String getCode() {
         //TODO: adapt to test case, run once, refresh ScalaEnsembleTester, run again and check if result is as expected
-        return EVAL_UC3_DENY; 
+        return EVAL_UC6_DENY; 
     }
     ////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -226,6 +226,120 @@ public class AccuracyEvaluation {
             "      println(\"NOT OK\")\n" + 
             "    }"; // OK
     
+    private static final String EVAL_UC4_ALLOW = "    val scenario = new RunningExample(LocalTime.parse(\"05:30:00Z\", DateTimeFormatter.ISO_OFFSET_TIME))\n" + 
+            "    val subjectW = new scenario.Subject(\"W\", \"Factory\", \"Worker\", \"Early-Production\")\n" + 
+            "    val subjectX = new scenario.Subject(\"X\", \"Factory\", \"Worker\", \"Late-Production\")\n" + 
+            "    scenario.components = List(subjectW, subjectX)\n" + 
+            "    scenario.rootEnsemble.init()\n" + 
+            "    val solved = scenario.rootEnsemble.solve()\n" + 
+            "    scenario.rootEnsemble.instance.accessFactoryRule.selectedMembers.foreach(x => println(convertToCol(x.allowedSubjects)));\n" + 
+            "    val ok = solved && scenario.rootEnsemble.instance.accessFactoryRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectW) && !convertToCol(x.allowedSubjects).contains(subjectX));                   \n" + 
+            "    if(ok) {\n" + 
+            "      println(\"OK\")\n" + 
+            "    } else {\n" + 
+            "      println(\"NOT OK\")\n" + 
+            "    }"; // OK
+    
+    private static final String EVAL_UC4_DENY = "    val scenario = new RunningExample(LocalTime.parse(\"05:20:00Z\", DateTimeFormatter.ISO_OFFSET_TIME))\n" + 
+            "    val subjectW = new scenario.Subject(\"W\", \"Factory\", \"Worker\", \"Early-Production\")\n" + 
+            "    val subjectX = new scenario.Subject(\"X\", \"Factory\", \"Worker\", \"Late-Production\")\n" + 
+            "    scenario.components = List(subjectW, subjectX)\n" + 
+            "    scenario.rootEnsemble.init()\n" + 
+            "    val solved = scenario.rootEnsemble.solve()\n" + 
+            "    scenario.rootEnsemble.instance.accessFactoryRule.selectedMembers.foreach(x => println(convertToCol(x.allowedSubjects)));\n" + 
+            "    val ok = solved && scenario.rootEnsemble.instance.accessFactoryRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).isEmpty());                   \n" + 
+            "    if(ok) {\n" + 
+            "      println(\"OK\")\n" + 
+            "    } else {\n" + 
+            "      println(\"NOT OK\")\n" + 
+            "    }"; // OK
+    
+    private static final String EVAL_UC5 = "//TODO: "
+            + "see XACML-2-Ensembles/tests/org.palladiosimulator.pcm.dataprocessing.dynamicextension.ensemblesgeneration.tests"
+            + "/eval_with_manual_changes/UC5/"; // OK (allow and deny) see manually adapted ensemble system
+    
+    private static final String EVAL_UC6_ALLOW = "    val scenario = new RunningExample(LocalTime.parse(\"13:00:00Z\", DateTimeFormatter.ISO_OFFSET_TIME))\n" + 
+            "    val subjectW = new scenario.Subject(\"W\", \"Production_Hall\", \"A\", \"Worker\")\n" + 
+            "    val subjectQAI = new scenario.Subject(\"QAI\", \"Production B\", \"A\", \"QAInspector\")\n" + 
+            "    val subjectQAW = new scenario.Subject(\"QAW\", null, \"B\", \"QAWorker\")\n" + 
+            "    val subjectQA = new scenario.Subject(\"QA\", null, \"A\", \"QA\")\n" + 
+            "    val accessSubjectA = subjectQA\n" + 
+            "    val accessSubjectB = subjectQAW\n" + 
+            "    val resourceM = new scenario.Resource(\"machine\", subjectQAI, \"INCIDENT_HAPPENED\", \"RESTRICTED\")\n" + 
+            "    val resourceRA = new scenario.Resource(\"reportA\", accessSubjectA, \"INCIDENT_HAPPENED\" , \"RESTRICTED\")\n" + 
+            "    val resourceRB = new scenario.Resource(\"reportB\", accessSubjectB, \"INCIDENT_HAPPENED\" , \"RESTRICTED\")\n" + 
+            "    scenario.components = List(subjectW, subjectQAI, subjectQAW, subjectQA, resourceM, resourceRA, resourceRB)\n" + 
+            "    scenario.rootEnsemble.init()\n" + 
+            "    val solved = scenario.rootEnsemble.solve()\n" + 
+            "    scenario.rootEnsemble.instance.sendDataRule.selectedMembers.foreach(x => println(convertToCol(x.allowedSubjects)));\n" + 
+            "    scenario.rootEnsemble.instance.sendDataRule.selectedMembers.foreach(x => println(convertToCol(x.allowedResources)));\n" + 
+            "    scenario.rootEnsemble.instance.sendIncidentToBRule.selectedMembers.foreach(x => println(convertToCol(x.allowedSubjects)));\n" + 
+            "    scenario.rootEnsemble.instance.sendIncidentToBRule.selectedMembers.foreach(x => println(convertToCol(x.allowedResources)));\n" + 
+            "    scenario.rootEnsemble.instance.receiveBRule.selectedMembers.foreach(x => println(convertToCol(x.allowedSubjects)));\n" + 
+            "    scenario.rootEnsemble.instance.receiveBRule.selectedMembers.foreach(x => println(convertToCol(x.allowedResources)));\n" + 
+            "    scenario.rootEnsemble.instance.checkPhysicalAccessRule.selectedMembers.foreach(x => println(convertToCol(x.allowedSubjects)));\n" + 
+            "    scenario.rootEnsemble.instance.checkPhysicalAccessRule.selectedMembers.foreach(x => println(convertToCol(x.allowedResources)));\n" + 
+            "    scenario.rootEnsemble.instance.sendIncidentToARule.selectedMembers.foreach(x => println(convertToCol(x.allowedSubjects)));\n" + 
+            "    scenario.rootEnsemble.instance.sendIncidentToARule.selectedMembers.foreach(x => println(convertToCol(x.allowedResources)));\n" + 
+            "    scenario.rootEnsemble.instance.receiveARule.selectedMembers.foreach(x => println(convertToCol(x.allowedSubjects)));\n" + 
+            "    scenario.rootEnsemble.instance.receiveARule.selectedMembers.foreach(x => println(convertToCol(x.allowedResources)));\n" + 
+            "    \n" + 
+            "    def containsOnly(collection: Collection[Component], component: Component) : Boolean = {\n" + 
+            "      return collection.size() == 1 && collection.contains(component)\n" + 
+            "    }\n" + 
+            "    \n" + 
+            "    val ok = solved && scenario.rootEnsemble.instance.sendDataRule.selectedMembers.exists(x => containsOnly(convertToCol(x.allowedSubjects), subjectW)) && \n" + 
+            "                       scenario.rootEnsemble.instance.sendDataRule.selectedMembers.exists(x => convertToCol(x.allowedResources).isEmpty()) && \n" + 
+            "                       scenario.rootEnsemble.instance.sendIncidentToBRule.selectedMembers.exists(x => containsOnly(convertToCol(x.allowedSubjects), subjectQA)) &&\n" + 
+            "                       scenario.rootEnsemble.instance.sendIncidentToBRule.selectedMembers.exists(x => containsOnly(convertToCol(x.allowedResources), resourceRA)) &&\n" + 
+            "                       scenario.rootEnsemble.instance.receiveBRule.selectedMembers.exists(x => containsOnly(convertToCol(x.allowedSubjects), subjectQAW)) &&\n" + 
+            "                       scenario.rootEnsemble.instance.receiveBRule.selectedMembers.exists(x => containsOnly(convertToCol(x.allowedResources), resourceRB)) &&\n" + 
+            "                       scenario.rootEnsemble.instance.checkPhysicalAccessRule.selectedMembers.exists(x => containsOnly(convertToCol(x.allowedSubjects), subjectQAI)) &&\n" + 
+            "                       scenario.rootEnsemble.instance.checkPhysicalAccessRule.selectedMembers.exists(x => containsOnly(convertToCol(x.allowedResources), resourceM)) &&\n" + 
+            "                       scenario.rootEnsemble.instance.sendIncidentToARule.selectedMembers.exists(x => containsOnly(convertToCol(x.allowedSubjects), subjectQAW)) &&\n" + 
+            "                       scenario.rootEnsemble.instance.sendIncidentToARule.selectedMembers.exists(x => containsOnly(convertToCol(x.allowedResources), resourceRB)) &&\n" + 
+            "                       scenario.rootEnsemble.instance.receiveARule.selectedMembers.exists(x => containsOnly(convertToCol(x.allowedSubjects), subjectQA)) &&\n" + 
+            "                       scenario.rootEnsemble.instance.receiveARule.selectedMembers.exists(x => containsOnly(convertToCol(x.allowedResources), resourceRA));\n" + 
+            "    if(ok) {\n" + 
+            "      println(\"OK\")\n" + 
+            "    } else {\n" + 
+            "      println(\"NOT OK\")\n" + 
+            "    }"; // OK
+    
+    private static final String EVAL_UC6_DENY = "    val scenario = new RunningExample(LocalTime.parse(\"13:00:00Z\", DateTimeFormatter.ISO_OFFSET_TIME))\n" + 
+            "    val subjectW = new scenario.Subject(\"W\", \"Production_Hall\", \"A\", \"Worker\")\n" + 
+            "    val subjectQAI = new scenario.Subject(\"QAI\", \"Production B\", \"A\", \"QAInspector\")\n" + 
+            "    val subjectQAW = new scenario.Subject(\"QAW\", null, \"B\", \"QAWorker\")\n" + 
+            "    val subjectQA = new scenario.Subject(\"QA\", null, \"A\", \"QA\")\n" + 
+            "    val accessSubjectA = subjectQA\n" + 
+            "    val accessSubjectB = subjectQAW\n" + 
+            "    val resourceM = new scenario.Resource(\"machine\", subjectQAI, \"INCIDENT_HAPPENED\", \"RESTRICTED\")\n" + 
+            "    val resourceRA = new scenario.Resource(\"reportA\", accessSubjectA, \"INCIDENT_HAPPENED\" , \"SECRET\")\n" + 
+            "    val resourceRB = new scenario.Resource(\"reportB\", accessSubjectB, \"INCIDENT_HAPPENED\" , \"SECRET\")\n" + 
+            "    scenario.components = List(subjectW, subjectQAI, subjectQAW, subjectQA, resourceM, resourceRA, resourceRB)\n" + 
+            "    scenario.rootEnsemble.init()\n" + 
+            "    val solved = scenario.rootEnsemble.solve()\n" + 
+            "    scenario.rootEnsemble.instance.sendIncidentToBRule.selectedMembers.foreach(x => println(convertToCol(x.allowedSubjects)));\n" + 
+            "    scenario.rootEnsemble.instance.sendIncidentToBRule.selectedMembers.foreach(x => println(convertToCol(x.allowedResources)));\n" + 
+            "    scenario.rootEnsemble.instance.sendIncidentToARule.selectedMembers.foreach(x => println(convertToCol(x.allowedSubjects)));\n" + 
+            "    scenario.rootEnsemble.instance.sendIncidentToARule.selectedMembers.foreach(x => println(convertToCol(x.allowedResources)));\n" + 
+            "    \n" + 
+            "    def containsOnly(collection: Collection[Component], component: Component) : Boolean = {\n" + 
+            "      return collection.size() == 1 && collection.contains(component)\n" + 
+            "    }\n" + 
+            "    \n" + 
+            "    val ok = solved && scenario.rootEnsemble.instance.sendDataRule.selectedMembers.exists(x => containsOnly(convertToCol(x.allowedSubjects), subjectW)) && \n" + 
+            "                       scenario.rootEnsemble.instance.sendDataRule.selectedMembers.exists(x => convertToCol(x.allowedResources).isEmpty()) && \n" + 
+            "                       scenario.rootEnsemble.instance.sendIncidentToBRule.selectedMembers.exists(x => containsOnly(convertToCol(x.allowedSubjects), subjectQA)) &&\n" + 
+            "                       scenario.rootEnsemble.instance.sendIncidentToBRule.selectedMembers.exists(x => convertToCol(x.allowedResources).isEmpty()) &&\n" + 
+            "                       scenario.rootEnsemble.instance.sendIncidentToARule.selectedMembers.exists(x => containsOnly(convertToCol(x.allowedSubjects), subjectQAW)) &&\n" + 
+            "                       scenario.rootEnsemble.instance.sendIncidentToARule.selectedMembers.exists(x => convertToCol(x.allowedResources).isEmpty());\n" + 
+            "    if(ok) {\n" + 
+            "      println(\"OK\")\n" + 
+            "    } else {\n" + 
+            "      println(\"NOT OK\")\n" + 
+            "    }"; // OK
+    
     private static final String CODE_RUNNING_ALLOW = "//TODO: adapt to your usecase scenario\n" + 
             "    val scenario = new RunningExample(LocalTime.parse(\"13:00:00Z\", DateTimeFormatter.ISO_OFFSET_TIME))\n" + 
             "    val subjectA = new scenario.Subject(\"W\", \"A\", \"Worker\")\n" + 
@@ -265,67 +379,6 @@ public class AccuracyEvaluation {
             "    } else {\n" + 
             "      println(\"deny\")\n" + 
             "    }";
-    
-    private static final String CODE_COMBINED_ALLOW = "//TODO: adapt to your usecase scenario\n" + 
-            "val scenario = new RunningExample(LocalTime.parse(\"13:00:00Z\", DateTimeFormatter.ISO_OFFSET_TIME))\n" + 
-            "val subjectA = new scenario.Subject(\"A\", \"Production B\", \"A\", \"QAInspector\")\n" + 
-            "val subjectB = new scenario.Subject(\"B\")\n" + 
-            "val resourceA = new scenario.Resource(\"machine\", subjectA, \"INCIDENT_HAPPENED\");\n" + 
-            "scenario.components = List(subjectA, subjectB, resourceA)\n" + 
-            "scenario.rootEnsemble.init()\n" + 
-            "val solved = scenario.rootEnsemble.solve()\n" + 
-            "val testActionAllow = solved && scenario.rootEnsemble.instance.checkPhysicalAccessRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && convertToCol(x.allowedResources).contains(resourceA)  && !convertToCol(x.allowedSubjects).contains(subjectB))\n" + 
-            "if(testActionAllow) {\n" + 
-            "println(\"allow\")\n" + 
-            "} else {\n" + 
-            "println(\"deny\")\n" + 
-            "}";
-    
-    private static final String CODE_COMBINED_DENY = "//TODO: adapt to your usecase scenario\n" + 
-            "val scenario = new RunningExample(LocalTime.parse(\"13:00:00Z\", DateTimeFormatter.ISO_OFFSET_TIME))\n" + 
-            "val subjectA = new scenario.Subject(\"A\", \"Production B\", \"B\", \"QAInspector\")\n" + 
-            "val subjectB = new scenario.Subject(\"B\")\n" + 
-            "val resourceA = new scenario.Resource(\"machine\", subjectA, \"INCIDENT_HAPPENED\");\n" + 
-            "scenario.components = List(subjectA, subjectB, resourceA)\n" + 
-            "scenario.rootEnsemble.init()\n" + 
-            "val solved = scenario.rootEnsemble.solve()\n" + 
-            "val testActionAllow = solved && scenario.rootEnsemble.instance.checkPhysicalAccessRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && convertToCol(x.allowedResources).contains(resourceA)  && !convertToCol(x.allowedSubjects).contains(subjectB))\n" + 
-            "if(testActionAllow) {\n" + 
-            "println(\"allow\")\n" + 
-            "} else {\n" + 
-            "println(\"deny\")\n" + 
-            "}";
-    
-    private static final String CODE_3_ALLOW = "//TODO: adapt to your usecase scenario\n" + 
-            "val scenario = new RunningExample(LocalTime.parse(\"13:00:00Z\", DateTimeFormatter.ISO_OFFSET_TIME))\n" + 
-            "val subjectA = new scenario.Subject(\"A\")\n" + 
-            "val subjectB = new scenario.Subject(\"B\")\n" + 
-            "val resourceA = new scenario.Resource(\"machine\", subjectA, \"INCIDENT_HAPPENED\");\n" + 
-            "scenario.components = List(subjectA, subjectB, resourceA)\n" + 
-            "scenario.rootEnsemble.init()\n" + 
-            "val solved = scenario.rootEnsemble.solve()\n" + 
-            "val testActionAllow = solved && scenario.rootEnsemble.instance.sendRawDataP1Rule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && convertToCol(x.allowedSubjects).contains(subjectB))\n" + 
-            "if(testActionAllow) {\n" + 
-            "println(\"allow\")\n" + 
-            "} else {\n" + 
-            "println(\"deny\")\n" + 
-            "}";
-    
-    private static final String CODE_3_DENY = "//TODO: adapt to your usecase scenario\n" + 
-            "val scenario = new RunningExample(LocalTime.parse(\"13:00:00Z\", DateTimeFormatter.ISO_OFFSET_TIME))\n" + 
-            "val subjectA = new scenario.Subject(\"A\", \"Board\", \"Analyst\")\n" + 
-            "val subjectB = new scenario.Subject(\"B\")\n" + 
-            "val resourceA = new scenario.Resource(\"machine\", subjectA, \"OK\");\n" + 
-            "scenario.components = List(subjectA, subjectB, resourceA)\n" + 
-            "scenario.rootEnsemble.init()\n" + 
-            "val solved = scenario.rootEnsemble.solve()\n" + 
-            "val testActionAllow = solved && scenario.rootEnsemble.instance.aNameRule.selectedMembers.exists(x => convertToCol(x.allowedSubjects).contains(subjectA) && convertToCol(x.allowedResources).contains(resourceA))\n" + 
-            "if(testActionAllow) {\n" + 
-            "println(\"allow\")\n" + 
-            "} else {\n" + 
-            "println(\"deny\")\n" + 
-            "}";
-    
     ////////////////////////////////////////////////////////////////////////////////////////////
     
 	public static void main(String[] args) {
